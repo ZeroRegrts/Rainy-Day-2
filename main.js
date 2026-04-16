@@ -133,7 +133,6 @@ function spawnPhrase(startProgress = 0, existingY = null, existingText = null) {
   requestAnimationFrame(tick);
 }
 
-// Handle browser tab switching to prevent animation glitches
 document.addEventListener('visibilitychange', () => {
   if (document.hidden) {
     wasHidden = true;
@@ -148,7 +147,6 @@ document.addEventListener('visibilitychange', () => {
   }
 });
 
-// Initial spawn loop
 (function loop() {
   setTimeout(() => {
     if (!document.hidden) spawnPhrase();
@@ -157,9 +155,10 @@ document.addEventListener('visibilitychange', () => {
 })();
 
 /* ─────────────────────────────────────────────
-   4. TITLE ANIMATION
-   Simulated Zhuyin typing on load.
+   4. TITLE & SUBTITLE
 ───────────────────────────────────────────── */
+
+// 4a. Title — zhuyin typing animation
 const zhuyinSteps = ['ㄩ', 'ㄩˇ', 'ㄩˇ ㄊ', 'ㄩˇ ㄊㄧ', 'ㄩˇ ㄊㄧㄢ', '雨天'];
 const titleEl = document.getElementById('title-text');
 let step = 0;
@@ -174,19 +173,36 @@ function typeTitle() {
 }
 setTimeout(typeTitle, 500);
 
+// 4b. Subtitle — rotating funny subtitles (RESTORED)
+const subtitles = [
+  'ㄏㄏㄏ',
+  '哈囉世界',
+  '贏麻了',
+  '遙遙領先',
+  '喝茶了嗎？🍵',
+  '此網站只有正能量',
+  'Today\'s date: 1946/09/08',
+  '尋釁滋事',
+  '源自於老祖宗的智慧',
+  '來源於永樂大典',
+  '嗯...這個嘛...',
+];
+
+document.getElementById('subtitle').textContent =
+  subtitles[Math.floor(Math.random() * subtitles.length)];
+
 /* ─────────────────────────────────────────────
    5. SETTINGS & PERSISTENCE
 ───────────────────────────────────────────── */
-const settingsBtn    = document.getElementById('btn-settings');
-const settingsMenu   = document.getElementById('settings-menu');
+const settingsBtn      = document.getElementById('btn-settings');
+const settingsMenu     = document.getElementById('settings-menu');
 const toggleAnimations = document.getElementById('toggle-animations');
-const toggleDark     = document.getElementById('toggle-dark');
-const timerPills     = document.querySelectorAll('.timer-pill');
+const toggleDark       = document.getElementById('toggle-dark');
+const timerPills       = document.querySelectorAll('.timer-pill');
 
 function applySettings() {
   const dark = sessionStorage.getItem('theme') === 'dark';
-  // Read animations setting (default to true if null)
-  const anims = sessionStorage.getItem('animations') !== 'false';
+  const anims = sessionStorage.getItem('animations') !== 'false'; 
   const duration = sessionStorage.getItem('timerDuration') || '60';
 
   if (dark) {
@@ -194,10 +210,8 @@ function applySettings() {
     toggleDark.checked = true;
   }
 
-  // Apply animation setting to toggle and internal state
   animationsEnabled = anims;
   toggleAnimations.checked = anims;
-  
   const cursor = document.getElementById('cursor');
   if (cursor) {
     if (!anims) {
@@ -215,6 +229,7 @@ function applySettings() {
 applySettings();
 
 settingsBtn.addEventListener('click', () => settingsMenu.classList.toggle('open'));
+
 document.addEventListener('click', (e) => {
   if (!settingsMenu.contains(e.target) && !settingsBtn.contains(e.target)) {
     settingsMenu.classList.remove('open');
@@ -223,24 +238,18 @@ document.addEventListener('click', (e) => {
 
 toggleAnimations.addEventListener('change', () => {
   animationsEnabled = toggleAnimations.checked;
-  // Save preference to sessionStorage
   sessionStorage.setItem('animations', animationsEnabled);
-
   const cursor = document.getElementById('cursor');
   if (!animationsEnabled) {
     document.querySelectorAll('.float-phrase').forEach(el => el.remove());
     activeYPositions.length = 0;
     savedPhrases = [];
-    if (cursor) {
-      cursor.style.animation = 'none';
-      cursor.style.opacity = '1';
-    }
+    if (cursor) { cursor.style.animation = 'none'; cursor.style.opacity = '1'; }
   } else {
-    if (cursor) {
-      cursor.style.animation = 'blink 0.9s step-end infinite';
-    }
+    if (cursor) { cursor.style.animation = 'blink 0.9s step-end infinite'; }
   }
 });
+
 toggleDark.addEventListener('change', () => {
   const isDark = toggleDark.checked;
   document.body.classList.toggle('dark', isDark);
@@ -284,7 +293,6 @@ function updateHomeLanguage() {
     settingsSpans[1].textContent = t.dark;
   }
 
-  // Update visual "active" state of spans
   const enSpan = document.getElementById('toggle-en');
   const zhSpan = document.getElementById('toggle-zh');
   if (lang === 'en') {

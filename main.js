@@ -276,8 +276,8 @@ document.getElementById('btn-write').addEventListener('click', () => {
 ───────────────────────────────────────────── */
 const langToggle = document.getElementById('lang-toggle');
 const homeTranslations = {
-  en: { learn: "Learn", write: "Write", animations: "Animations", dark: "Dark Mode" },
-  zh: { learn: "學習", write: "書寫", animations: "動畫", dark: "深色模式" }
+  en: { learn: "Learn", write: "Type", animations: "Animations", dark: "Dark Mode" },
+  zh: { learn: "學習", write: "打字", animations: "動畫", dark: "深色模式" }
 };
 
 function updateHomeLanguage() {

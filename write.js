@@ -259,6 +259,7 @@ function updateInputPosition() {
   hiddenInput.style.top = (rect.bottom + 40) + 'px';
   hiddenInput.style.left = rect.left + 'px';
 }
+
 /* ─────────────────────────────────────────────
    9. FOCUS MANAGEMENT
 ───────────────────────────────────────────── */
@@ -368,14 +369,14 @@ function startWpmSampling() {
 function processChar(ch) {
   if (!started) initTest();
   if (paused) {
-  paused = false;
-  if (mode === 'speedtest') {
-    resumeTimer();
-  } else {
-    resumePracticeTimer();
+    paused = false;
+    if (mode === 'speedtest') {
+      resumeTimer();
+    } else {
+      resumePracticeTimer();
+    }
+    enterFocusMode();
   }
-  enterFocusMode();
-}
 
   const expected = chars[cursorIndex];
   const isCorrect = normalize(ch) === normalize(expected);
@@ -414,14 +415,14 @@ function processChar(ch) {
 function processBackspace() {
   if (!started) return;
   if (paused) {
-  paused = false;
-  if (mode === 'speedtest') {
-    resumeTimer();
-  } else {
-    resumePracticeTimer();
+    paused = false;
+    if (mode === 'speedtest') {
+      resumeTimer();
+    } else {
+      resumePracticeTimer();
+    }
+    enterFocusMode();
   }
-  enterFocusMode();
-}
   if (cursorIndex === startOffset) return;
   resetBlink();
 
@@ -545,7 +546,7 @@ function initPreview() {
 }
 
 /* ─────────────────────────────────────────────
-   15. INIT TEST — first keystroke triggers this
+   15. INIT TEST
 ───────────────────────────────────────────── */
 function initTest() {
   lockControls();
@@ -630,42 +631,41 @@ function restartTest() {
 }
 
 /* ─────────────────────────────────────────────
-   18. MODE SWITCHING
+   18. MODE SWITCHING (FIXED)
 ───────────────────────────────────────────── */
 document.getElementById('btn-speedtest').addEventListener('click', () => {
+  if (started) return;
   mode = 'speedtest';
   document.getElementById('btn-speedtest').classList.add('active');
   document.getElementById('btn-practice').classList.remove('active');
   setTimerPillsDisabled(false);
 
   const d = getTimerDuration();
-  timerEl.textContent = d;
-  focusTimerEl.textContent = d;
-});
-
-document.getElementById('btn-practice').addEventListener('click', () => {
-  mode = 'practice';
-document.getElementById('btn-speedtest').addEventListener('click', () => {
-  mode = 'speedtest';
-  document.getElementById('btn-speedtest').classList.add('active');
-  document.getElementById('btn-practice').classList.remove('active');
-  setTimerPillsDisabled(false);
-
-  const d = getTimerDuration();
+  timer = d;
   timerEl.textContent = d;
   focusTimerEl.textContent = d;
   updateStats();
 });
+
+document.getElementById('btn-practice').addEventListener('click', () => {
+  if (started) return;
+  mode = 'practice';
+  document.getElementById('btn-practice').classList.add('active');
+  document.getElementById('btn-speedtest').classList.remove('active');
+  setTimerPillsDisabled(true);
+
   clearInterval(timerInterval);
   practiceSeconds = 0;
   timerEl.textContent = '∞';
   focusTimerEl.textContent = '∞';
   wpmEl.textContent = '-';
+  updateStats();
 });
 
 document.getElementById('btn-abort').addEventListener('click', () => {
   endTest();
 });
+
 /* ─────────────────────────────────────────────
    19. RESULT BUTTONS
 ───────────────────────────────────────────── */
@@ -690,9 +690,7 @@ btnHome.addEventListener('click', () => {
 ───────────────────────────────────────────── */
 setTimerPillsDisabled(mode === 'practice');
 initPreview();
-/* ─────────────────────────────────────────────
-   21. LANGUAGE TOGGLE
-───────────────────────────────────────────── */
+
 /* ─────────────────────────────────────────────
    21. LANGUAGE TOGGLE
 ───────────────────────────────────────────── */
@@ -740,7 +738,6 @@ function updateWriteLanguage() {
   document.getElementById('btn-stats').textContent = t.stats;
   document.getElementById('btn-home').textContent = t.home;
 
-  // UPDATED: Update active state on toggle spans
   const enSpan = document.getElementById('toggle-en');
   const zhSpan = document.getElementById('toggle-zh');
   if (lang === 'en') {
@@ -752,7 +749,6 @@ function updateWriteLanguage() {
   }
 }
 
-// UPDATED: Improved click listener to match main.js
 document.getElementById('lang-toggle').addEventListener('click', (e) => {
   if (e.target.classList.contains('divider')) return;
   const clicked = e.target;

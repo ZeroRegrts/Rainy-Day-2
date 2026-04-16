@@ -1,0 +1,102 @@
+<!DOCTYPE html>
+<html lang="zh-TW">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>雨天 — Write</title>
+  <link rel="stylesheet" href="style.css" />
+  <link rel="stylesheet" href="write.css" />
+</head>
+<body>
+  <div id="app">
+
+    <!-- ── 1. TOP NAV (always visible) ── -->
+    <div id="topnav" class="topnav-scaled">
+      <a href="index.html" id="logo-mark">雨天</a>
+      <div id="lang-toggle">
+  <span id="toggle-en">EN</span>
+  <span class="divider">|</span>
+  <span id="toggle-zh">中文</span>
+</div>
+    </div>
+
+<!-- ── 2. UI CHROME (fades during typing) ── -->
+<div id="ui-chrome">
+  <div id="mode-bar">
+    <button class="mode-btn active" id="btn-speedtest">Speed Test</button>
+    <button class="mode-btn" id="btn-practice">Practice</button>
+    <div class="mode-bar-divider"></div>
+    <button class="timer-pill" data-seconds="15">15s</button>
+    <button class="timer-pill" data-seconds="30">30s</button>
+    <button class="timer-pill active" data-seconds="60">60s</button>
+    <button class="timer-pill" data-seconds="120">120s</button>
+    <div class="mode-bar-divider"></div>
+    <button class="mode-btn" id="btn-toggle-strict">Strict</button>
+    <div class="mode-bar-divider"></div>
+    <button class="mode-btn" id="btn-toggle-input">⌨ Show Input</button>
+<div class="mode-bar-divider" id="abort-divider" style="display:none"></div>
+<button class="mode-btn" id="btn-abort" style="display:none; color:#e74c3c;">Abort</button>
+  </div>
+  <div id="stats-bar">
+    <div class="stat">
+      <span class="stat-label">Time</span>
+      <span class="stat-value" id="timer">60</span>
+    </div>
+    <div class="stat">
+      <span class="stat-label">WPM</span>
+      <span class="stat-value" id="wpm">0</span>
+    </div>
+    <div class="stat">
+      <span class="stat-label">Accuracy</span>
+      <span class="stat-value" id="accuracy">100%</span>
+    </div>
+  </div>
+</div>
+    <!-- ── 3. FOCUS TIMER (visible during focus mode) ── -->
+    <div id="focus-timer">60</div>
+
+    <!-- ── 4. TYPING AREA ── -->
+    <div id="write-center">
+      <div id="char-display" tabindex="0"></div>
+      <input id="hidden-input" autocomplete="off" autocorrect="off" autocapitalize="off" spellcheck="false" />
+      <input
+        type="text"
+        id="visible-input"
+        placeholder="開始輸入注音..."
+        autocomplete="off"
+        autocorrect="off"
+        autocapitalize="off"
+        spellcheck="false"
+      />
+    </div>
+
+    <!-- ── 5. RESULTS SCREEN ── -->
+    <div id="results-screen" class="hidden">
+      <div id="results-card">
+        <div class="result-title">結果</div>
+        <div class="results-grid">
+          <div class="result-item">
+            <span class="result-label">WPM</span>
+            <span class="result-value" id="result-wpm">0</span>
+          </div>
+          <div class="result-item">
+            <span class="result-label">Accuracy</span>
+            <span class="result-value" id="result-accuracy">0%</span>
+          </div>
+          <div class="result-item">
+            <span class="result-label">Characters</span>
+            <span class="result-value" id="result-chars">0</span>
+          </div>
+        </div>
+        <div id="result-buttons">
+          <button id="btn-restart">再來一次</button>
+          <button id="btn-stats">統計</button>
+          <button id="btn-home">回首頁</button>
+        </div>
+      </div>
+    </div>
+
+  </div>
+  <script src="write.js"></script>
+</body>
+</html>

@@ -1,0 +1,74 @@
+<!DOCTYPE html>
+<html lang="zh-TW">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>雨天 — Yutian</title>
+  <link rel="stylesheet" href="style.css" />
+</head>
+<body>
+  <div id="app">
+
+    <!-- ── 1. TOP NAV (logo + language toggle) ── -->
+    <div id="topnav" class="topnav-scaled">
+      <div id="logo-mark">雨天</div>
+      <div id="lang-toggle">
+  <span id="toggle-en">EN</span>
+  <span class="divider">|</span>
+  <span id="toggle-zh">中文</span>
+</div>
+    </div>
+
+    <!-- ── 2. SETTINGS BUTTON (gear icon, top right) ── -->
+    <button id="btn-settings">
+      <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="#c0392b" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+        <circle cx="12" cy="12" r="3"/>
+        <path d="M19.4 15a1.65 1.65 0 0 0 .33 1.82l.06.06a2 2 0 0 1-2.83 2.83l-.06-.06a1.65 1.65 0 0 0-1.82-.33 1.65 1.65 0 0 0-1 1.51V21a2 2 0 0 1-4 0v-.09A1.65 1.65 0 0 0 9 19.4a1.65 1.65 0 0 0-1.82.33l-.06.06a2 2 0 0 1-2.83-2.83l.06-.06A1.65 1.65 0 0 0 4.68 15a1.65 1.65 0 0 0-1.51-1H3a2 2 0 0 1 0-4h.09A1.65 1.65 0 0 0 4.6 9a1.65 1.65 0 0 0-.33-1.82l-.06-.06a2 2 0 0 1 2.83-2.83l.06.06A1.65 1.65 0 0 0 9 4.68a1.65 1.65 0 0 0 1-1.51V3a2 2 0 0 1 4 0v.09a1.65 1.65 0 0 0 1 1.51 1.65 1.65 0 0 0 1.82-.33l.06-.06a2 2 0 0 1 2.83 2.83l-.06.06A1.65 1.65 0 0 0 19.4 9a1.65 1.65 0 0 0 1.51 1H21a2 2 0 0 1 0 4h-.09a1.65 1.65 0 0 0-1.51 1z"/>
+      </svg>
+    </button>
+
+    <!-- ── 3. SETTINGS MENU (dropdown, opens on gear click) ── -->
+<div id="settings-menu">
+  <div class="settings-item">
+    <span>Animations</span>
+    <label class="toggle">
+      <input type="checkbox" id="toggle-animations" checked />
+      <span class="slider"></span>
+    </label>
+  </div>
+  <div class="settings-item">
+    <span>Dark Mode</span>
+    <label class="toggle">
+      <input type="checkbox" id="toggle-dark" />
+      <span class="slider"></span>
+    </label>
+  </div>
+</div>
+
+    <!-- ── 4. CENTER CONTENT (title + subtitle + buttons) ── -->
+    <div id="center">
+
+      <!-- 4a. Title with zhuyin typing animation -->
+      <div id="title-line">
+        <span id="title-text"></span>
+        <span id="cursor"></span>
+      </div>
+
+      <!-- 4b. Subtitle -->
+      <div id="subtitle">Your Mandarin learning companion</div>
+
+      <!-- 4c. Learn / Write split button -->
+      <div id="action-btn">
+        <button class="btn-half" id="btn-learn">Learn</button>
+        <div class="btn-divider"></div>
+        <button class="btn-half" id="btn-write">Write</button>
+      </div>
+
+    </div>
+
+    <!-- ── 5. DANMAKU phrases are injected here by main.js ── -->
+
+  </div>
+  <script src="main.js"></script>
+</body>
+</html>

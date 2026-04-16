@@ -1,0 +1,529 @@
+/* ─────────────────────────────────────────────
+   1. UI CHROME — fades during focus mode
+───────────────────────────────────────────── */
+#ui-chrome {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 1rem;
+  transition: opacity 0.5s ease;
+  pointer-events: auto;
+}
+
+#ui-chrome.ui-hidden {
+  opacity: 0;
+  pointer-events: none;
+}
+
+/* ─────────────────────────────────────────────
+   2. MODE BAR
+───────────────────────────────────────────── */
+#mode-bar {
+  position: absolute;
+  top: 1.5rem;
+  left: 50%;
+  transform: translateX(-50%);
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  z-index: 10;
+}
+
+.mode-btn {
+  background: transparent;
+  border: 2px solid transparent;
+  color: #aaa;
+  font-size: 13px;
+  font-weight: 500;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  padding: 0.4rem 1rem;
+  border-radius: 20px;
+  cursor: pointer;
+  transition: all 0.18s;
+}
+
+.mode-btn.active {
+  border-color: #c0392b;
+  color: #c0392b;
+}
+
+.mode-btn:hover {
+  color: #c0392b;
+}
+
+.mode-bar-divider {
+  width: 1px;
+  height: 16px;
+  background: #ddd;
+  margin: 0 0.25rem;
+}
+
+/* ─────────────────────────────────────────────
+   3. STATS BAR
+───────────────────────────────────────────── */
+#stats-bar {
+  position: absolute;
+  top: 5rem;
+  display: flex;
+  gap: 3rem;
+  z-index: 10;
+}
+
+.stat {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 0.2rem;
+}
+
+.stat-label {
+  font-size: 11px;
+  letter-spacing: 0.12em;
+  text-transform: uppercase;
+  color: #aaa;
+  font-weight: 400;
+}
+
+.stat-value {
+  font-size: 1.8rem;
+  font-weight: 700;
+  color: #c0392b;
+  line-height: 1;
+}
+
+/* ─────────────────────────────────────────────
+   4. FOCUS TIMER
+───────────────────────────────────────────── */
+#focus-timer {
+  position: fixed;
+  bottom: 2rem;
+  left: 50%;
+  transform: translateX(-50%);
+  font-size: 1rem;
+  font-weight: 500;
+  color: #bbb;
+  letter-spacing: 0.15em;
+  z-index: 20;
+  opacity: 0;
+  transition: opacity 0.5s ease;
+  pointer-events: none;
+}
+
+#focus-timer.visible {
+  opacity: 1;
+}
+
+/* ─────────────────────────────────────────────
+   5. WRITE CENTER
+───────────────────────────────────────────── */
+#write-center {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 2rem;
+  z-index: 5;
+  width: 100%;
+  max-width: 900px;
+  padding: 0 2rem;
+  position: relative;
+}
+
+/* ─────────────────────────────────────────────
+   6. CHARACTER DISPLAY
+───────────────────────────────────────────── */
+#char-display {
+  display: flex;
+  flex-direction: column;
+  gap: 1rem;
+  align-items: center;
+  width: 100%;
+  max-width: 860px;
+  cursor: text;
+  outline: none;
+}
+
+.type-line {
+  display: flex;
+  gap: 0.1rem;
+  justify-content: center;
+  position: relative;
+}
+
+.char-zh {
+  font-size: 4.5rem;
+  font-weight: 500;
+  color: #ddd;
+  transition: color 0.1s;
+  min-width: 4.6rem;
+  text-align: center;
+  position: relative;
+}
+
+.char-zh.correct {
+  color: #111;
+  font-weight: 700;
+}
+
+.char-zh.incorrect {
+  color: #e74c3c;
+}
+
+/* ─────────────────────────────────────────────
+   7. CURSOR
+───────────────────────────────────────────── */
+#type-cursor {
+  display: inline-block;
+  width: 3px;
+  height: 6rem;
+  background: #c0392b;
+  vertical-align: top;
+  margin-right: 2px;
+  position: relative;
+  top: 0;
+}
+
+#type-cursor.blinking {
+  animation: blink 0.9s step-end infinite;
+}
+
+@keyframes blink {
+  0%, 100% { opacity: 1; }
+  50%       { opacity: 0; }
+}
+
+/* ─────────────────────────────────────────────
+   8. HIDDEN INPUT
+───────────────────────────────────────────── */
+#hidden-input {
+  position: fixed;
+  opacity: 0;
+  pointer-events: none;
+  width: 1px;
+  height: 1px;
+  border: none;
+  padding: 0;
+}
+
+/* ─────────────────────────────────────────────
+   9. VISIBLE INPUT BOX
+───────────────────────────────────────────── */
+#visible-input {
+  width: 100%;
+  max-width: 500px;
+  padding: 0.85rem 1.5rem;
+  font-size: 1.2rem;
+  border: 2px solid #ddd;
+  border-radius: 60px;
+  outline: none;
+  text-align: center;
+  background: white;
+  color: #333;
+  font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
+  transition: border-color 0.18s, opacity 0.3s;
+  display: none;
+}
+
+#visible-input.shown {
+  display: block;
+}
+
+#visible-input:focus {
+  border-color: #c0392b;
+}
+
+/* ─────────────────────────────────────────────
+   10. PAUSED OVERLAY
+───────────────────────────────────────────── */
+#paused-overlay {
+  position: absolute;
+  inset: 0;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background: rgba(245, 243, 239, 0.85);
+  z-index: 20;
+  font-size: 1rem;
+  letter-spacing: 0.2em;
+  text-transform: uppercase;
+  color: #aaa;
+  font-weight: 400;
+  cursor: pointer;
+}
+
+/* ─────────────────────────────────────────────
+   11. RESULTS SCREEN
+───────────────────────────────────────────── */
+#results-screen {
+  position: fixed;
+  inset: 0;
+  background: rgba(245, 243, 239, 0.95);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  z-index: 100;
+}
+
+#results-screen.hidden {
+  display: none;
+}
+
+#results-card {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 2rem;
+}
+
+.result-title {
+  font-size: 1rem;
+  letter-spacing: 0.2em;
+  text-transform: uppercase;
+  color: #aaa;
+  font-weight: 400;
+}
+
+.results-grid {
+  display: flex;
+  gap: 4rem;
+}
+
+.result-item {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 0.3rem;
+}
+
+.result-label {
+  font-size: 11px;
+  letter-spacing: 0.12em;
+  text-transform: uppercase;
+  color: #aaa;
+}
+
+.result-value {
+  font-size: 4rem;
+  font-weight: 700;
+  color: #c0392b;
+  line-height: 1;
+}
+
+#result-buttons {
+  display: flex;
+  gap: 1rem;
+}
+
+#btn-restart, #btn-stats, #btn-home {
+  padding: 0.75rem 2rem;
+  font-size: 0.9rem;
+  font-weight: 600;
+  border: none;
+  border-radius: 60px;
+  cursor: pointer;
+  letter-spacing: 0.13em;
+  text-transform: uppercase;
+  transition: background 0.18s, color 0.18s;
+}
+
+#btn-restart {
+  background: #c0392b;
+  color: white;
+}
+
+#btn-restart:hover { background: #a93226; }
+
+#btn-stats {
+  background: transparent;
+  border: 2px solid #c0392b;
+  color: #c0392b;
+}
+
+#btn-stats:hover {
+  background: #c0392b;
+  color: white;
+}
+
+#btn-home {
+  background: transparent;
+  border: 2px solid #ccc;
+  color: #aaa;
+}
+
+#btn-home:hover {
+  border-color: #c0392b;
+  color: #c0392b;
+}
+/* ─────────────────────────────────────────────
+   12. SHAKE ANIMATION
+───────────────────────────────────────────── */
+@keyframes shake {
+  0%   { transform: translateX(0); }
+  20%  { transform: translateX(-4px); }
+  40%  { transform: translateX(4px); }
+  60%  { transform: translateX(-4px); }
+  80%  { transform: translateX(4px); }
+  100% { transform: translateX(0); }
+}
+
+.char-zh.shake {
+  animation: shake 0.3s ease;
+}
+
+/* ─────────────────────────────────────────────
+   13. DARK MODE
+───────────────────────────────────────────── */
+body.dark {
+  background: #1a1a1a;
+}
+
+body.dark #app {
+  background: #1a1a1a;
+}
+
+body.dark #logo-mark {
+  border-color: #e05a4a;
+  color: #e05a4a;
+  text-decoration: none;
+}
+
+body.dark #lang-toggle {
+  color: #e05a4a;
+}
+
+body.dark .mode-btn {
+  color: #555;
+}
+
+body.dark .mode-btn.active {
+  border-color: #e05a4a;
+  color: #e05a4a;
+}
+
+body.dark .mode-btn:hover {
+  color: #e05a4a;
+}
+
+body.dark .mode-bar-divider {
+  background: #333;
+}
+
+body.dark .stat-label {
+  color: #555;
+}
+
+body.dark .stat-value {
+  color: #e05a4a;
+}
+
+body.dark #focus-timer {
+  color: #555;
+}
+
+body.dark .char-zh {
+  color: #333;
+}
+
+body.dark .char-zh.correct {
+  color: #eee;
+}
+
+body.dark .char-zh.incorrect {
+  color: #e05a4a;
+}
+
+body.dark #type-cursor {
+  background: #e05a4a;
+}
+
+body.dark #visible-input {
+  background: #2a2a2a;
+  border-color: #333;
+  color: #eee;
+}
+
+body.dark #visible-input:focus {
+  border-color: #e05a4a;
+}
+
+body.dark #results-screen {
+  background: rgba(26, 26, 26, 0.95);
+}
+
+body.dark .result-title {
+  color: #555;
+}
+
+body.dark .result-value {
+  color: #e05a4a;
+}
+
+body.dark .result-label {
+  color: #555;
+}
+
+body.dark #btn-restart {
+  background: #e05a4a;
+}
+
+body.dark #btn-stats {
+  border-color: #e05a4a;
+  color: #e05a4a;
+}
+
+body.dark #btn-stats:hover {
+  background: #e05a4a;
+  color: #1a1a1a;
+}
+
+body.dark #btn-home {
+  border-color: #333;
+  color: #555;
+}
+
+body.dark #paused-overlay {
+  background: rgba(26, 26, 26, 0.85);
+  color: #555;
+}
+/* ─────────────────────────────────────────────
+   14. TIMER PILLS (in mode bar)
+───────────────────────────────────────────── */
+.timer-pill {
+  background: transparent;
+  border: 2px solid transparent;
+  color: #aaa;
+  font-size: 13px;
+  font-weight: 500;
+  padding: 0.4rem 0.6rem;
+  border-radius: 20px;
+  cursor: pointer;
+  transition: all 0.18s;
+  letter-spacing: 0.08em;
+}
+
+.timer-pill.active {
+  border-color: #c0392b;
+  color: #c0392b;
+}
+
+.timer-pill:hover {
+  color: #c0392b;
+}
+
+body.dark .timer-pill {
+  color: #555;
+}
+
+body.dark .timer-pill.active {
+  border-color: #e05a4a;
+  color: #e05a4a;
+}
+
+body.dark .timer-pill:hover {
+  color: #e05a4a;
+}
+.timer-pill.disabled {
+  opacity: 0.35;
+  pointer-events: none;
+  cursor: default;
+}

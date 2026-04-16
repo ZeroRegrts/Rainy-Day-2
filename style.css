@@ -1,0 +1,400 @@
+/* ─────────────────────────────────────────────
+   1. RESET
+───────────────────────────────────────────── */
+* {
+  margin: 0;
+  padding: 0;
+  box-sizing: border-box;
+}
+
+body {
+  background: #f5f3ef;
+  font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
+}
+
+/* ─────────────────────────────────────────────
+   2. APP CONTAINER
+───────────────────────────────────────────── */
+#app {
+  min-height: 100vh;
+  background: #f5f3ef;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  position: relative;
+  overflow: clip;
+  width: 100%;
+}
+
+/* ─────────────────────────────────────────────
+   3. TOP NAV (logo + language toggle, top left)
+───────────────────────────────────────────── */
+#topnav {
+  position: absolute;
+  top: 1.5rem;
+  left: 2.5rem;
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  z-index: 10;
+}
+
+#topnav.topnav-scaled {
+  scale: 1.5;
+}
+#logo-mark {
+  width: 34px;
+  height: 34px;
+  border: 2px solid #c0392b;
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 13px;
+  color: #c0392b;
+  font-weight: 500;
+  letter-spacing: -1px;
+  text-decoration: none;
+}
+
+#lang-toggle {
+  color: #c0392b;  /* add this if missing */
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  user-select: none;
+}
+
+#lang-toggle span:not(.divider) {
+  opacity: 0.3;
+  transition: opacity 0.2s ease, transform 0.2s ease;
+  display: inline-block;
+}
+
+#lang-toggle span.active {
+  opacity: 1;
+  font-weight: 700;
+}
+
+#lang-toggle .divider {
+  margin: 0 6px;
+  opacity: 0.2;
+  cursor: default;
+}
+
+#lang-toggle span:not(.active):not(.divider):hover {
+  opacity: 0.65;
+  transform: translateY(-2px);
+}
+/* ─────────────────────────────────────────────
+   4. SETTINGS BUTTON (gear icon, top right)
+───────────────────────────────────────────── */
+#btn-settings {
+  position: fixed;
+  top: 1.5rem;
+  right: 2.5rem;
+  background: transparent;
+  border: none;
+  cursor: pointer;
+  z-index: 999;
+  padding: 0.4rem;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  transition: transform 0.2s ease;
+}
+
+#btn-settings svg {
+  width: 26px;
+  height: 26px;
+  pointer-events: none;
+  transition: transform 0.2s ease;
+}
+
+#btn-settings:hover {
+  background: transparent;
+}
+
+#btn-settings:hover svg {
+  transform: scale(1.35) rotate(90deg);
+}
+
+/* ─────────────────────────────────────────────
+   5. SETTINGS MENU (dropdown panel)
+───────────────────────────────────────────── */
+#settings-menu {
+  position: fixed;
+  top: 4rem;
+  right: 2.5rem;
+  background: white;
+  border: 1.5px solid #c0392b;
+  border-radius: 16px;
+  padding: 0.75rem 1rem;
+  z-index: 998;
+  min-width: 180px;
+  display: none;
+  flex-direction: column;
+  gap: 0.5rem;
+}
+
+#settings-menu.open {
+  display: flex;
+}
+
+.settings-item {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  font-size: 13px;
+  font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
+  color: #c0392b;
+  font-weight: 500;
+  letter-spacing: 0.05em;
+}
+
+/* ─────────────────────────────────────────────
+   6. TOGGLE SWITCH (inside settings menu)
+───────────────────────────────────────────── */
+.toggle {
+  position: relative;
+  display: inline-block;
+  width: 36px;
+  height: 20px;
+}
+
+.toggle input {
+  opacity: 0;
+  width: 0;
+  height: 0;
+}
+
+.slider {
+  position: absolute;
+  cursor: pointer;
+  top: 0; left: 0; right: 0; bottom: 0;
+  background: #ddd;
+  border-radius: 20px;
+  transition: 0.2s;
+}
+
+.slider:before {
+  position: absolute;
+  content: "";
+  height: 14px;
+  width: 14px;
+  left: 3px;
+  bottom: 3px;
+  background: white;
+  border-radius: 50%;
+  transition: 0.2s;
+}
+
+.toggle input:checked + .slider {
+  background: #c0392b;
+}
+
+.toggle input:checked + .slider:before {
+  transform: translateX(16px);
+}
+
+/* ─────────────────────────────────────────────
+   7. CENTER CONTENT (title + subtitle)
+───────────────────────────────────────────── */
+#center {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 0.65rem;
+  z-index: 5;
+  scale: 1.25;
+}
+
+#title-line {
+  font-size: clamp(5.5rem, 9vw, 15.5rem);
+  font-weight: 700;
+  color: #c0392b;
+  letter-spacing: -0.01em;
+  line-height: 1;
+  display: flex;
+  align-items: center;
+  min-height: 1.1em;
+}
+
+#cursor {
+  display: inline-block;
+  width: 3px;
+  height: 1em;
+  background: #c0392b;
+  margin-left: 4px;
+  animation: blink 0.9s step-end infinite;
+  vertical-align: middle;
+}
+
+@keyframes blink {
+  0%, 100% { opacity: 1; }
+  50%       { opacity: 0; }
+}
+
+#subtitle {
+  font-size: clamp(0.78rem, 1.5vw, 0.92rem);
+  color: #888;
+  letter-spacing: 0.12em;
+  text-transform: uppercase;
+  font-weight: 400;
+  margin-top: 0.1rem;
+}
+
+/* ─────────────────────────────────────────────
+   8. LEARN / WRITE SPLIT BUTTON
+───────────────────────────────────────────── */
+#action-btn {
+  display: flex;
+  border: 2px solid white;
+  border-radius: 60px;
+  overflow: hidden;
+  background: #c0392b;
+  margin-top: 1.2rem;
+}
+
+.btn-half {
+  padding: 0.75rem 2.8rem;
+  font-size: clamp(0.85rem, 1.5vw, 1rem);
+  font-weight: 600;
+  color: white;
+  background: transparent;
+  border: none;
+  cursor: pointer;
+  letter-spacing: 0.13em;
+  text-transform: uppercase;
+  transition: background 0.18s;
+}
+
+.btn-half:hover  { background: rgba(255, 255, 255, 0.15); }
+.btn-half:active { background: rgba(255, 255, 255, 0.25); }
+
+.btn-divider {
+  width: 2px;
+  background: rgba(255, 255, 255, 0.6);
+  flex-shrink: 0;
+}
+
+/* ─────────────────────────────────────────────
+   9. DANMAKU — floating background phrases
+   injected by main.js, travel right to left
+───────────────────────────────────────────── */
+.float-phrase {
+  position: absolute;
+  white-space: nowrap;
+  font-size: 2.5rem;
+  color: black;
+  font-weight: 400;
+  pointer-events: none;
+  z-index: 1;
+  left: 0;
+}
+/* ─────────────────────────────────────────────
+   10. DARK MODE
+───────────────────────────────────────────── */
+body.dark {
+  background: #1a1a1a;
+}
+
+body.dark #app {
+  background: #1a1a1a;
+}
+
+body.dark #logo-mark {
+  border-color: #e05a4a;
+  color: #e05a4a;
+}
+
+body.dark #lang-toggle {
+  color: #e05a4a;
+}
+
+body.dark #btn-settings svg {
+  stroke: #e05a4a;
+}
+
+body.dark #settings-menu {
+  background: #2a2a2a;
+  border-color: #e05a4a;
+}
+
+body.dark .settings-item {
+  color: #e05a4a;
+}
+
+body.dark #title-line {
+  color: #e05a4a;
+}
+
+body.dark #cursor {
+  background: #e05a4a;
+}
+
+body.dark #subtitle {
+  color: #666;
+}
+
+body.dark #action-btn {
+  background: #e05a4a;
+  border-color: #1a1a1a;
+}
+
+body.dark .float-phrase {
+  color: #fff;
+}
+
+body.dark #center {
+  color: #e05a4a;
+}
+body.dark #lang-toggle span.active {
+  color: #e05a4a;
+}
+/* ─────────────────────────────────────────────
+   11. SETTINGS EXTRAS
+───────────────────────────────────────────── */
+.settings-item-col {
+  flex-direction: column;
+  align-items: flex-start;
+  gap: 0.5rem;
+}
+
+#timer-pills {
+  display: flex;
+  gap: 0.4rem;
+}
+
+.timer-pill {
+  padding: 0.2rem 0.6rem;
+  font-size: 12px;
+  font-weight: 500;
+  border: 1.5px solid #ddd;
+  border-radius: 20px;
+  background: transparent;
+  color: #aaa;
+  cursor: pointer;
+  transition: all 0.18s;
+}
+
+.timer-pill.active {
+  border-color: #c0392b;
+  color: #c0392b;
+}
+
+.timer-pill:hover {
+  border-color: #c0392b;
+  color: #c0392b;
+}
+
+body.dark .timer-pill {
+  border-color: #444;
+  color: #666;
+}
+
+body.dark .timer-pill.active {
+  border-color: #e05a4a;
+  color: #e05a4a;
+}

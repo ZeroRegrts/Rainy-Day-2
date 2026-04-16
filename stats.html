@@ -1,0 +1,66 @@
+<!DOCTYPE html>
+<html lang="zh-TW">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>雨天 — 統計</title>
+  <link rel="stylesheet" href="style.css" />
+  <link rel="stylesheet" href="stats.css" />
+</head>
+<body>
+  <script>
+    if (sessionStorage.getItem('theme') === 'dark') {
+      document.body.classList.add('dark');
+    }
+  </script>
+  <div id="app">
+
+    <!-- ── 1. TOP NAV ── -->
+    <div id="topnav" class="topnav-scaled">
+      <a href="index.html" id="logo-mark">雨天</a>
+      <div id="lang-toggle">
+  <span id="toggle-en">EN</span>
+  <span class="divider">|</span>
+  <span id="toggle-zh">中文</span>
+</div>
+    </div>
+
+    <!-- ── 2. STATS CONTENT ── -->
+    <div id="stats-center">
+
+      <div id="stats-title">統計</div>
+
+      <div id="stats-grid">
+        <div class="stat-block">
+          <div class="stat-block-label">WPM</div>
+          <div class="stat-block-value" id="s-wpm">—</div>
+        </div>
+        <div class="stat-block">
+          <div class="stat-block-label">Peak Burst</div>
+          <div class="stat-block-value" id="s-burst">—</div>
+        </div>
+        <div class="stat-block">
+          <div class="stat-block-label">Accuracy</div>
+          <div class="stat-block-value" id="s-accuracy">—</div>
+        </div>
+        <div class="stat-block">
+          <div class="stat-block-label">Characters</div>
+          <div class="stat-block-value" id="s-chars">—</div>
+        </div>
+      </div>
+
+      <div id="graph-container">
+        <div id="graph-label">WPM over time</div>
+        <canvas id="wpm-graph"></canvas>
+      </div>
+
+      <div id="stats-buttons">
+        <button id="btn-again">再試一次</button>
+        <button id="btn-back-home">回首頁</button>
+      </div>
+
+    </div>
+  </div>
+  <script src="stats.js"></script>
+</body>
+</html>

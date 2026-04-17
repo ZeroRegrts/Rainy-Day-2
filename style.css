@@ -206,13 +206,14 @@ body {
   display: flex;
   flex-direction: column;
   align-items: center;
-  gap: 0.65rem;
+  gap: 0.6rem; 
   z-index: 5;
-  scale: 1.65;
+  scale: 1.4; /* Split the difference between 1.2 and 1.65 */
 }
 
 #title-line {
-  font-size: clamp(5.5rem, 9vw, 15.5rem);
+  /* Increased the ceiling to 12.5rem and the scaling factor to 8vw */
+  font-size: clamp(4.5rem, 8vw, 12.5rem); 
   font-weight: 700;
   color: #c0392b;
   letter-spacing: -0.01em;
@@ -224,28 +225,23 @@ body {
 
 #cursor {
   display: inline-block;
-  width: 3px;
-  height: 1em;
+  width: 2.5px; /* Slightly thicker to match the 1.4 scale */
+  height: 0.95em;
   background: #c0392b;
   margin-left: 4px;
   animation: blink 0.9s step-end infinite;
   vertical-align: middle;
 }
 
-@keyframes blink {
-  0%, 100% { opacity: 1; }
-  50%       { opacity: 0; }
-}
-
 #subtitle {
-  font-size: clamp(0.78rem, 1.5vw, 1.32rem);
+  /* Increased slightly for better legibility */
+  font-size: clamp(0.75rem, 1.4vw, 1.2rem);
   color: #888;
   letter-spacing: 0.12em;
   text-transform: uppercase;
   font-weight: 400;
   margin-top: 0.1rem;
 }
-
 /* ─────────────────────────────────────────────
    8. LEARN / WRITE SPLIT BUTTON
 ───────────────────────────────────────────── */

@@ -271,6 +271,10 @@ document.getElementById('btn-write').addEventListener('click', () => {
   window.location.href = 'write.html';
 });
 
+document.getElementById('btn-learn').addEventListener('click', () => {
+  window.location.href = 'learn.html';
+});
+
 /* ─────────────────────────────────────────────
    7. LANGUAGE TOGGLE
 ───────────────────────────────────────────── */

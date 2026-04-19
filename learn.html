@@ -34,59 +34,168 @@
       </button>
     </nav>
 
-    <!-- SYMBOL DRILL -->
+    <!-- ══ TAB 1: DRILL ══ -->
     <section id="tab-drill" class="tab-panel active">
-      <div id="drill-header">
-        <div id="drill-stats">
-          <div class="drill-stat">
-            <span class="drill-stat-label" id="lbl-streak">Streak</span>
-            <span class="drill-stat-value" id="drill-streak">0</span>
+
+      <!-- SECTION LIST -->
+      <div id="section-list">
+
+        <div class="section-mastery-legend" id="mastery-legend-row">
+          <span id="mastery-legend-label">Mastery</span>
+          <div class="legend-dots">
+            <span class="mastery-dot level-0"></span>
+            <span id="legend-unseen">Unseen</span>
+            <span class="mastery-dot level-1"></span>
+            <span id="legend-learning">Learning</span>
+            <span class="mastery-dot level-2"></span>
+            <span id="legend-familiar">Familiar</span>
+            <span class="mastery-dot level-3"></span>
+            <span id="legend-mastered">Mastered</span>
           </div>
-          <div class="drill-stat">
-            <span class="drill-stat-label" id="lbl-accuracy">Accuracy</span>
-            <span class="drill-stat-value" id="drill-accuracy">—</span>
+        </div>
+
+        <div class="section-row" data-section="initials">
+          <div class="section-row-left">
+            <div class="section-row-name" id="sname-initials">Initials <span class="section-row-zh">聲母</span></div>
+            <div class="section-row-desc" id="sdesc-initials">The starting consonant sounds</div>
+            <div class="section-row-mastery" id="mastery-initials"></div>
+          </div>
+          <div class="section-row-count" id="scount-initials">21</div>
+        </div>
+
+        <div class="section-row" data-section="medials">
+          <div class="section-row-left">
+            <div class="section-row-name" id="sname-medials">Medials <span class="section-row-zh">介母</span></div>
+            <div class="section-row-desc" id="sdesc-medials">The bridge vowels ㄧ ㄨ ㄩ</div>
+            <div class="section-row-mastery" id="mastery-medials"></div>
+          </div>
+          <div class="section-row-count" id="scount-medials">3</div>
+        </div>
+
+        <div class="section-row" data-section="finals">
+          <div class="section-row-left">
+            <div class="section-row-name" id="sname-finals">Finals <span class="section-row-zh">韻母</span></div>
+            <div class="section-row-desc" id="sdesc-finals">The ending vowel sounds</div>
+            <div class="section-row-mastery" id="mastery-finals"></div>
+          </div>
+          <div class="section-row-count" id="scount-finals">13</div>
+        </div>
+
+        <div class="section-row" data-section="tones">
+          <div class="section-row-left">
+            <div class="section-row-name" id="sname-tones">Tones <span class="section-row-zh">聲調</span></div>
+            <div class="section-row-desc" id="sdesc-tones">Tone marks — Space for 1st tone</div>
+            <div class="section-row-mastery" id="mastery-tones"></div>
+          </div>
+          <div class="section-row-count" id="scount-tones">5</div>
+        </div>
+
+        <div class="section-row" data-section="combos">
+          <div class="section-row-left">
+            <div class="section-row-name" id="sname-combos">Combinations <span class="section-row-zh">組合</span></div>
+            <div class="section-row-desc" id="sdesc-combos">Multi-key syllables: initial + medial + final + tone</div>
+            <div class="section-combo-bar">
+              <div class="section-combo-fill" id="combo-mastery-fill"></div>
+            </div>
+          </div>
+          <div class="section-row-count" id="scount-combos">∞</div>
+        </div>
+      </div>
+
+      <!-- SESSION SETUP (shown after clicking a section) -->
+      <div id="session-setup" class="hidden">
+        <div id="setup-card">
+          <div id="setup-section-name"></div>
+          <div id="setup-desc" id="setup-description"></div>
+          <div id="setup-length-label"></div>
+          <div id="setup-length-options">
+            <button class="length-btn" data-len="10">10</button>
+            <button class="length-btn active" data-len="20">20</button>
+            <button class="length-btn" data-len="30">30</button>
+            <button class="length-btn" data-len="0">∞</button>
+          </div>
+          <div id="setup-buttons">
+            <button id="btn-start-drill">Start</button>
+            <button id="btn-setup-cancel">Cancel</button>
           </div>
         </div>
-        <div id="drill-group-nav">
-          <span class="group-link active" data-filter="all" id="glink-all">All</span>
-          <span class="group-link" data-filter="initials" id="glink-initials">Initials</span>
-          <span class="group-link" data-filter="medials" id="glink-medials">Medials</span>
-          <span class="group-link" data-filter="finals" id="glink-finals">Finals</span>
-          <span class="group-link" data-filter="tones" id="glink-tones">Tones</span>
+      </div>
+
+      <!-- DRILL SCREEN -->
+      <div id="drill-screen" class="hidden">
+
+        <div id="drill-topbar">
+          <button id="btn-back">← Back</button>
+          <div id="drill-section-title"></div>
+          <div id="drill-stats">
+            <div class="drill-stat">
+              <span class="drill-stat-label" id="lbl-streak">Streak</span>
+              <span class="drill-stat-value" id="drill-streak">0</span>
+            </div>
+            <div class="drill-stat">
+              <span class="drill-stat-label" id="lbl-accuracy">Accuracy</span>
+              <span class="drill-stat-value" id="drill-accuracy">—</span>
+            </div>
+            <div class="drill-stat">
+              <span class="drill-stat-label" id="lbl-progress">Progress</span>
+              <span class="drill-stat-value" id="drill-session-count">—</span>
+            </div>
+          </div>
         </div>
-      </div>
 
-      <div id="drill-mastery-row"></div>
-
-      <div id="drill-main">
-        <div id="drill-card">
-          <div id="drill-category-tag"></div>
-          <div id="drill-symbol">ㄅ</div>
-          <div id="drill-pinyin-hint">b</div>
-          <div id="drill-expected-key"></div>
-          <div id="drill-instruction">Press the key on your QWERTY keyboard</div>
-          <div id="drill-feedback"></div>
+        <!-- mastery dots for single sections, progress bar for combos -->
+        <div id="drill-mastery-row"></div>
+        <div id="drill-progress-bar-wrap" class="hidden">
+          <div id="drill-progress-bar"><div id="drill-progress-fill"></div></div>
         </div>
-      </div>
 
-      <div id="drill-toggles">
-        <button class="toggle-btn active" id="btn-show-pinyin">Pinyin</button>
-        <button class="toggle-btn active" id="btn-show-key">Show key</button>
-        <button class="toggle-btn" id="btn-show-keyboard">Keyboard map</button>
-      </div>
+        <div id="drill-main">
+          <div id="drill-card">
+            <div id="drill-category-tag"></div>
+            <div id="drill-symbol">ㄅ</div>
+            <div id="drill-pinyin-hint">b</div>
+            <div id="drill-expected-key"></div>
+            <div id="drill-instruction">Press the key on your QWERTY keyboard</div>
+            <div id="drill-feedback"></div>
+          </div>
+        </div>
 
-      <div id="drill-keyboard-hint" class="hint-hidden">
-        <div id="drill-kb"></div>
+        <div id="drill-toggles">
+          <button class="toggle-btn active" id="btn-show-pinyin">Pinyin</button>
+          <button class="toggle-btn active" id="btn-show-key">Show key</button>
+          <button class="toggle-btn" id="btn-show-keyboard">Keyboard map</button>
+        </div>
+
+        <div id="drill-keyboard-hint" class="hint-hidden">
+          <div id="drill-kb"></div>
+        </div>
+
+        <div id="drill-score-screen" class="hint-hidden">
+          <div id="drill-score-card">
+            <div id="drill-score-title">Session Complete</div>
+            <div id="drill-score-number"></div>
+            <div id="drill-score-pct"></div>
+            <div id="drill-score-buttons">
+              <button id="btn-drill-retry">Try Again</button>
+              <button id="btn-drill-infinite">Infinite Mode</button>
+              <button id="btn-drill-back">Back</button>
+            </div>
+          </div>
+        </div>
+
       </div>
     </section>
 
-    <!-- WORD PRACTICE -->
+    <!-- ══ TAB 2: WORD PRACTICE ══ -->
     <section id="tab-words" class="tab-panel">
       <div id="word-header">
         <div id="hsk-pills">
           <button class="hsk-pill active" data-hsk="1">HSK 1</button>
           <button class="hsk-pill" data-hsk="2">HSK 2</button>
           <button class="hsk-pill" data-hsk="3">HSK 3</button>
+          <button class="hsk-pill" data-hsk="4">HSK 4</button>
+          <button class="hsk-pill" data-hsk="5">HSK 5</button>
+          <button class="hsk-pill" data-hsk="6">HSK 6</button>
         </div>
         <div id="word-progress-wrap">
           <div id="word-progress-bar"><div id="word-progress-fill"></div></div>

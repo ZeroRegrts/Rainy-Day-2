@@ -1,5 +1,5 @@
 /* ─────────────────────────────────────────────
-   learn.js — 雨天 Learn Page v4
+   learn.js — 雨天 Learn Page v4 (Updated Accuracy/Progress)
 ───────────────────────────────────────────── */
 
 /* ══════════════════════════════════════════════
@@ -85,10 +85,8 @@ const SECTIONS = {
   },
   combos: {
     type: 'combo',
-    /* All syllables are verified valid Mandarin phonology.
-       ㄩ only pairs with ㄐ ㄑ ㄒ ㄌ ㄋ (never ㄍ ㄎ ㄏ ㄓ ㄔ ㄕ ㄖ ㄗ ㄘ ㄙ ㄅ ㄆ ㄇ ㄈ ㄉ ㄊ) */
     syllables: [
-      /* standalone initials (syllabic consonants) */
+      /* standalone initials */
       ['ㄓ','ˊ'],['ㄓ','ˇ'],['ㄓ','ˋ'],
       ['ㄔ','ˊ'],['ㄔ','ˇ'],['ㄔ','ˋ'],
       ['ㄕ','ˊ'],['ㄕ','ˇ'],['ㄕ','ˋ'],
@@ -115,7 +113,7 @@ const SECTIONS = {
       ['ㄕ','ㄢ','SPACE'],['ㄕ','ㄣ','SPACE'],
       ['ㄗ','ㄞ','ˋ'],['ㄗ','ㄢ','SPACE'],
       ['ㄘ','ㄞ','ˊ'],['ㄙ','ㄢ','SPACE'],
-      /* initial + ㄧ + tone (valid: all initials except ㄓㄔㄕㄖㄗㄘㄙ which use ㄧ differently) */
+      /* initial + ㄧ + tone */
       ['ㄅ','ㄧ','SPACE'],['ㄅ','ㄧ','ˊ'],['ㄅ','ㄧ','ˇ'],['ㄅ','ㄧ','ˋ'],
       ['ㄆ','ㄧ','SPACE'],['ㄆ','ㄧ','ˊ'],['ㄆ','ㄧ','ˇ'],
       ['ㄇ','ㄧ','ˊ'],['ㄇ','ㄧ','ˋ'],
@@ -141,7 +139,7 @@ const SECTIONS = {
       ['ㄗ','ㄨ','SPACE'],['ㄗ','ㄨ','ˊ'],['ㄗ','ㄨ','ˇ'],
       ['ㄘ','ㄨ','SPACE'],['ㄘ','ㄨ','ˊ'],
       ['ㄙ','ㄨ','SPACE'],['ㄙ','ㄨ','ˊ'],
-      /* initial + ㄩ + tone — ONLY ㄐ ㄑ ㄒ ㄌ ㄋ are valid */
+      /* initial + ㄩ + tone */
       ['ㄋ','ㄩ','ˇ'],['ㄋ','ㄩ','ˋ'],
       ['ㄌ','ㄩ','ˊ'],['ㄌ','ㄩ','ˋ'],
       ['ㄐ','ㄩ','SPACE'],['ㄐ','ㄩ','ˊ'],['ㄐ','ㄩ','ˇ'],['ㄐ','ㄩ','ˋ'],
@@ -171,7 +169,7 @@ const SECTIONS = {
       ['ㄍ','ㄨ','ㄤ','SPACE'],['ㄍ','ㄨ','ㄤ','ˇ'],
       ['ㄓ','ㄨ','ㄢ','SPACE'],['ㄔ','ㄨ','ㄢ','ˊ'],
       ['ㄍ','ㄨ','ㄢ','SPACE'],['ㄏ','ㄨ','ㄢ','ˊ'],
-      /* 4-key: initial + ㄩ + final + tone — ONLY ㄐ ㄑ ㄒ ㄌ ㄋ */
+      /* 4-key: initial + ㄩ + final + tone */
       ['ㄑ','ㄩ','ㄢ','SPACE'],['ㄑ','ㄩ','ㄢ','ˊ'],
       ['ㄒ','ㄩ','ㄢ','SPACE'],['ㄐ','ㄩ','ㄢ','ˊ'],
       ['ㄐ','ㄩ','ㄥ','SPACE'],['ㄑ','ㄩ','ㄥ','ˊ'],['ㄒ','ㄩ','ㄥ','ˊ'],
@@ -294,7 +292,9 @@ let currentCombo   = null;
 let comboStep      = 0;
 let drillStreak    = 0;
 let drillCorrect   = 0;
-let drillTotal     = 0;
+let drillTotal     = 0; // Tracks items completed (for the progress bar)
+let drillAttempts  = 0; // Tracks items presented (for accuracy)
+let itemHasMistake = false; // Ensures one-time penalty per item
 let drillLocked    = false;
 let drillInfinite  = false;
 let drillLimit     = 20;
@@ -304,7 +304,7 @@ let drillShowKeyboard = false;
 
 function startDrill(sectionKey, infinite) {
   currentSection = sectionKey;
-  drillStreak = 0; drillCorrect = 0; drillTotal = 0; drillLocked = false;
+  drillStreak = 0; drillCorrect = 0; drillTotal = 0; drillAttempts = 0; drillLocked = false;
   drillInfinite = infinite || chosenLength === 0;
   drillLimit = chosenLength;
 
@@ -355,7 +355,7 @@ function checkSessionEnd() {
 }
 
 function showDrillScore() {
-  const pct = drillTotal > 0 ? Math.round((drillCorrect / drillTotal) * 100) : 0;
+  const pct = drillAttempts > 0 ? Math.round((drillCorrect / drillAttempts) * 100) : 0;
   document.getElementById('drill-score-number').textContent = drillCorrect + ' / ' + drillTotal;
   document.getElementById('drill-score-pct').textContent = pct + '% correct';
   document.getElementById('drill-score-screen').classList.remove('hint-hidden');
@@ -364,6 +364,8 @@ function showDrillScore() {
 
 function nextItem() {
   drillLocked = false;
+  drillAttempts++; // A new item is presented
+  itemHasMistake = false; // Reset mistake tracker for the new item
   document.getElementById('drill-feedback').textContent = '';
   if (SECTIONS[currentSection].type === 'combo') nextCombo();
   else nextSingle();
@@ -534,11 +536,11 @@ function handleSingleKey(pressed) {
   const expectedKey = ZHUYIN_TO_KEY[currentSymbol];
   const isSpace = currentSymbol==='1st';
   const correct = isSpace ? pressed===' ' : pressed===expectedKey;
-  drillTotal++;
   const symEl = document.getElementById('drill-symbol');
 
   if (correct) {
-    drillCorrect++; drillStreak++;
+    if (!itemHasMistake) { drillCorrect++; drillStreak++; } // Only reward if flawless
+    drillTotal++; // Only progress forward when correctly finished
     mastery[currentSymbol] = Math.min(3,(mastery[currentSymbol]||0)+1);
     weights[currentSymbol] = Math.max(0.3,(weights[currentSymbol]||1)*0.65);
     symEl.classList.add('flash-correct');
@@ -546,6 +548,7 @@ function handleSingleKey(pressed) {
     setTimeout(() => { if (checkSessionEnd()) showDrillScore(); else nextItem(); }, 350);
   } else {
     drillStreak = 0;
+    itemHasMistake = true; // Mark penalty once
     mastery[currentSymbol] = Math.max(0,(mastery[currentSymbol]||0)-1);
     weights[currentSymbol] = (weights[currentSymbol]||1)*2.0;
     drillLocked = true;
@@ -576,7 +579,8 @@ function handleComboKey(pressed) {
     renderComboKeys();
     if (drillShowKeyboard) renderKeyboard(null,null);
     if (comboStep>=currentCombo.length) {
-      drillCorrect++; drillStreak++; drillTotal++;
+      if (!itemHasMistake) { drillCorrect++; drillStreak++; } // Only reward if flawless
+      drillTotal++; // Only progress forward when correctly finished
       const k=currentCombo.join('');
       mastery[k]=Math.min(3,(mastery[k]||0)+1);
       weights[k]=Math.max(0.3,(weights[k]||1)*0.65);
@@ -590,7 +594,8 @@ function handleComboKey(pressed) {
       }
     }
   } else {
-    drillStreak=0; drillTotal++;
+    drillStreak=0;
+    itemHasMistake = true; // Mark penalty once
     const k=currentCombo.join('');
     mastery[k]=Math.max(0,(mastery[k]||0)-1);
     weights[k]=(weights[k]||1)*1.8;
@@ -609,9 +614,10 @@ function handleComboKey(pressed) {
 
 function updateDrillStats() {
   document.getElementById('drill-streak').textContent = drillStreak;
-  const acc = drillTotal>0 ? Math.round((drillCorrect/drillTotal)*100)+'%' : '—';
+  // Calculate accuracy based on items presented vs flawless attempts
+  const acc = drillAttempts>0 ? Math.round((drillCorrect/drillAttempts)*100)+'%' : '—';
   document.getElementById('drill-accuracy').textContent = acc;
-  updateSessionCount();
+  updateSessionCount(); // Uses drillTotal (completed items) for the progress bar
 }
 
 function renderKeyboard(highlightKey, wrongKey) {
@@ -724,7 +730,7 @@ const WORD_BANKS = {
     {chars:'高興',   zhuyin:'ㄍㄠ ㄒㄧㄥˋ',         meaning:'Happy'},
     {chars:'知道',   zhuyin:'ㄓ ㄉㄠˋ',             meaning:'To know'},
     {chars:'喜歡',   zhuyin:'ㄒㄧˇ ㄏㄨㄢ',         meaning:'To like'},
-    {chars:'可以',   zhuyin:'ㄎㄜˇ ㄧˇ',            meaning:'Can / may'},
+    {chars:'可以',   zhuyin:'ㄎㄜˇ ㄧˇ',            meaning:'轉可以'},
     {chars:'覺得',   zhuyin:'ㄐㄩㄝˊ ㄉㄜ',         meaning:'To feel / think'},
     {chars:'時間',   zhuyin:'ㄕˊ ㄐㄧㄢ',           meaning:'Time'},
     {chars:'東西',   zhuyin:'ㄉㄨㄥ ㄒㄧ',          meaning:'Things / stuff'},
@@ -826,10 +832,12 @@ const WORD_BANKS = {
 
 let wordHSK=1, wordList=[], wordIndex=0, wordCorrect=0;
 let wordShowZhuyin=true, wordShowKeys=true, wordLocked=false;
+let wordShowMeaning=true, wordShowKeyboard=false;
+let wordHasMistake=false; // New tracker for Word Practice
 
 function initWordSession() {
   wordList = [...WORD_BANKS[wordHSK]].sort(()=>Math.random()-0.5);
-  wordIndex=0; wordCorrect=0; wordLocked=false;
+  wordIndex=0; wordCorrect=0; wordLocked=false; wordHasMistake=false;
   document.getElementById('word-score-screen').classList.add('hint-hidden');
   renderWord();
   updateWordProgress();
@@ -838,6 +846,7 @@ function initWordSession() {
 function renderWord() {
   const word = wordList[wordIndex];
   if (!word) return;
+  wordHasMistake = false; // Reset tracker on new word
   const chars=[...word.chars], zhuyinParts=word.zhuyin.split(' ');
   const row=document.getElementById('word-chars-row');
   row.innerHTML='';
@@ -868,6 +877,7 @@ function renderWord() {
   });
 
   document.getElementById('word-meaning-label').textContent=word.meaning;
+  document.getElementById('word-meaning-label').style.opacity = wordShowMeaning ? '1' : '0';
   document.getElementById('word-feedback').textContent='';
   document.getElementById('word-feedback').className='';
 
@@ -888,12 +898,14 @@ function checkWord() {
   const word=wordList[wordIndex]; if (!word) return;
   const typed=document.getElementById('word-input').value.trim();
   if (typed===word.chars) {
-    wordCorrect++; wordLocked=true;
+    if (!wordHasMistake) wordCorrect++; // Only grant correct stat if flawless
+    wordLocked=true;
     document.getElementById('word-input').classList.add('inp-correct');
     const fb=document.getElementById('word-feedback');
     fb.textContent='✓'; fb.className='fb-correct';
     setTimeout(()=>{ wordIndex++; updateWordProgress(); if(wordIndex>=wordList.length) showWordScore(); else renderWord(); },500);
   } else if (typed.length>=word.chars.length) {
+    wordHasMistake = true; // Mark mistake so they don't get a point
     document.getElementById('word-input').classList.add('inp-wrong');
     const fb=document.getElementById('word-feedback');
     fb.textContent=word.zhuyin; fb.className='fb-wrong';
@@ -921,6 +933,43 @@ document.getElementById('btn-show-keys').addEventListener('click',()=>{
   document.getElementById('btn-show-keys').classList.toggle('active',wordShowKeys);
   document.getElementById('word-key-sequence').classList.toggle('hint-hidden',!wordShowKeys);
 });
+document.getElementById('btn-show-meaning').addEventListener('click',()=>{
+  wordShowMeaning=!wordShowMeaning;
+  document.getElementById('btn-show-meaning').classList.toggle('active',wordShowMeaning);
+  document.getElementById('word-meaning-label').style.opacity = wordShowMeaning ? '1' : '0';
+});
+document.getElementById('btn-show-word-keyboard').addEventListener('click',()=>{
+  wordShowKeyboard=!wordShowKeyboard;
+  document.getElementById('btn-show-word-keyboard').classList.toggle('active',wordShowKeyboard);
+  document.getElementById('word-keyboard-hint').classList.toggle('hint-hidden',!wordShowKeyboard);
+  if (wordShowKeyboard) renderWordKeyboard();
+});
+
+function renderWordKeyboard() {
+  const kb = document.getElementById('word-kb');
+  kb.innerHTML = '';
+  KB_ROWS.forEach(row => {
+    const rowEl = document.createElement('div');
+    rowEl.className = 'kb-row';
+    row.forEach(k => {
+      const keyEl = document.createElement('div');
+      let cls = 'kb-key';
+      if (k.tone) cls += ' tone-key';
+      if (k.space) cls += ' space-key';
+      keyEl.className = cls;
+      const zhEl = document.createElement('div');
+      zhEl.className = 'kk-zh';
+      zhEl.textContent = k.space ? '1st' : k.zh;
+      const qEl = document.createElement('div');
+      qEl.className = 'kk-qwerty';
+      qEl.textContent = k.space ? 'SPACE' : k.key;
+      keyEl.appendChild(zhEl);
+      keyEl.appendChild(qEl);
+      rowEl.appendChild(keyEl);
+    });
+    kb.appendChild(rowEl);
+  });
+}
 document.querySelectorAll('.hsk-pill').forEach(pill=>{
   pill.addEventListener('click',()=>{
     document.querySelectorAll('.hsk-pill').forEach(p=>p.classList.remove('active'));
@@ -959,7 +1008,7 @@ const TRANSLATIONS = {
     drillRetry:'Try Again', drillInfinite:'Infinite Mode', drillBack:'Back',
     /* word practice */
     hsk1:'HSK 1', hsk2:'HSK 2', hsk3:'HSK 3', hsk4:'HSK 4', hsk5:'HSK 5', hsk6:'HSK 6',
-    zhuyinBtn:'Zhuyin', keySeqBtn:'Key sequence',
+    zhuyinBtn:'Zhuyin', keySeqBtn:'Key sequence', meaningBtn:'Translation', wordKbBtn:'Keyboard map',
     wordPlaceholder:'Type the word...',
     wordHint:'Enable your zhuyin input method',
     scoreTitle:'Session Complete',
@@ -988,7 +1037,7 @@ const TRANSLATIONS = {
     drillRetry:'再試一次', drillInfinite:'無限模式', drillBack:'返回',
     /* word practice */
     hsk1:'HSK 1', hsk2:'HSK 2', hsk3:'HSK 3', hsk4:'HSK 4', hsk5:'HSK 5', hsk6:'HSK 6',
-    zhuyinBtn:'注音', keySeqBtn:'按鍵序列',
+    zhuyinBtn:'注音', keySeqBtn:'按鍵序列', meaningBtn:'翻譯', wordKbBtn:'鍵盤圖',
     wordPlaceholder:'輸入這個詞...',
     wordHint:'請開啟注音輸入法',
     scoreTitle:'練習完成',
@@ -1042,6 +1091,8 @@ function updateLanguage() {
   /* word practice */
   document.getElementById('btn-show-zhuyin').textContent = t.zhuyinBtn;
   document.getElementById('btn-show-keys').textContent = t.keySeqBtn;
+  document.getElementById('btn-show-meaning').textContent = t.meaningBtn;
+  document.getElementById('btn-show-word-keyboard').textContent = t.wordKbBtn;
   document.getElementById('word-input').placeholder = t.wordPlaceholder;
   document.getElementById('word-hint-label').textContent = t.wordHint;
   document.getElementById('score-title').textContent = t.scoreTitle;

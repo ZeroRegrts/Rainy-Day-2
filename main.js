@@ -158,34 +158,52 @@ document.addEventListener('visibilitychange', () => {
    4. TITLE & SUBTITLE
 ───────────────────────────────────────────── */
 
-// 4a. Title — zhuyin typing animation
-const zhuyinSteps = ['ㄩ', 'ㄩˇ', 'ㄩˇ ㄊ', 'ㄩˇ ㄊㄧ', 'ㄩˇ ㄊㄧㄢ', '雨天'];
+// 4a. Title — bilingual typing animation
+const titleSteps = {
+  zh: ['ㄩ', 'ㄩˇ', 'ㄩˇ ㄊ', 'ㄩˇ ㄊㄧ', 'ㄩˇ ㄊㄧㄢ', '雨天'],
+  en: ['R', 'Ra', 'Rai', 'Rain', 'Rainy', 'Rainy ', 'Rainy D', 'Rainy Da', 'Rainy Day']
+};
 const titleEl = document.getElementById('title-text');
 let step = 0;
+let isTypingDone = false; 
+let typeTimeout = null;
+
+function startTyping() {
+  clearTimeout(typeTimeout);
+  step = 0;
+  isTypingDone = false;
+  const cursor = document.getElementById('cursor');
+  if (cursor) {
+    cursor.style.animation = 'none';
+    cursor.style.opacity = '1';
+  }
+  typeTitle();
+}
 
 function typeTitle() {
-  if (step < zhuyinSteps.length) {
-    titleEl.textContent = zhuyinSteps[step];
+  const lang = sessionStorage.getItem('lang') || 'zh';
+  const steps = titleSteps[lang];
+  
+  if (step < steps.length) {
+    titleEl.textContent = steps[step];
     step++;
-    const isLast = step === zhuyinSteps.length;
-    setTimeout(typeTitle, isLast ? 500 : 150 + Math.random() * 150);
+    const isLast = step === steps.length;
+    typeTimeout = setTimeout(typeTitle, isLast ? 500 : 100 + Math.random() * 100);
+  } else {
+    isTypingDone = true;
+    const cursor = document.getElementById('cursor');
+    if (cursor && animationsEnabled) {
+      cursor.style.animation = 'blink 0.9s step-end infinite';
+    }
   }
 }
-setTimeout(typeTitle, 500);
+setTimeout(startTyping, 500);
 
-// 4b. Subtitle — rotating funny subtitles (RESTORED)
+// 4b. Subtitle — rotating funny subtitles
 const subtitles = [
-  'ㄏㄏㄏ',
-  '哈囉世界',
-  '贏麻了',
-  '遙遙領先',
-  '喝茶了嗎？🍵',
-  '此網站只有正能量',
-  'Today\'s date: 1946/09/08',
-  '尋釁滋事',
-  '源自於老祖宗的智慧',
-  '來源於永樂大典',
-  '嗯...這個嘛...',
+  'ㄏㄏㄏ', '哈囉世界', '贏麻了', '遙遙領先', '喝茶了嗎？',
+  '此網站只有正能量', 'Today\'s date: 1946/09/08', '尋釁滋事',
+  '源自於老祖宗的智慧', '來源於永樂大典', '嗯...這個嘛...',
 ];
 
 document.getElementById('subtitle').textContent =
@@ -212,13 +230,18 @@ function applySettings() {
 
   animationsEnabled = anims;
   toggleAnimations.checked = anims;
+  
   const cursor = document.getElementById('cursor');
   if (cursor) {
     if (!anims) {
       cursor.style.animation = 'none';
       cursor.style.opacity = '1';
-    } else {
+    } else if (isTypingDone) {
+      // Only force blink on load if typing has somehow already finished
       cursor.style.animation = 'blink 0.9s step-end infinite';
+    } else {
+      // Keep it solid while typing
+      cursor.style.animation = 'none';
     }
   }
 
@@ -239,6 +262,7 @@ document.addEventListener('click', (e) => {
 toggleAnimations.addEventListener('change', () => {
   animationsEnabled = toggleAnimations.checked;
   sessionStorage.setItem('animations', animationsEnabled);
+  
   const cursor = document.getElementById('cursor');
   if (!animationsEnabled) {
     document.querySelectorAll('.float-phrase').forEach(el => el.remove());
@@ -246,7 +270,10 @@ toggleAnimations.addEventListener('change', () => {
     savedPhrases = [];
     if (cursor) { cursor.style.animation = 'none'; cursor.style.opacity = '1'; }
   } else {
-    if (cursor) { cursor.style.animation = 'blink 0.9s step-end infinite'; }
+    // If user toggles it back on, only blink if typing is done
+    if (cursor && isTypingDone) { 
+      cursor.style.animation = 'blink 0.9s step-end infinite'; 
+    }
   }
 });
 
@@ -263,7 +290,6 @@ timerPills.forEach(pill => {
     sessionStorage.setItem('timerDuration', pill.dataset.seconds);
   });
 });
-
 /* ─────────────────────────────────────────────
    6. NAVIGATION
 ───────────────────────────────────────────── */
@@ -305,6 +331,18 @@ function updateHomeLanguage() {
   } else {
     zhSpan.classList.add('active');
     enSpan.classList.remove('active');
+  }
+
+  // Shift the title up ONLY for English
+  const titleLine = document.getElementById('title-line');
+  if (titleLine) {
+    titleLine.style.transform = (lang === 'en') ? 'translateY(-3rem)' : 'none';
+  }
+
+  // If they toggle language after it finished typing, re-type it in the new language!
+  const finalWord = titleSteps[lang][titleSteps[lang].length - 1];
+  if (isTypingDone && titleEl.textContent !== finalWord) {
+    startTyping();
   }
 }
 

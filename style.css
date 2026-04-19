@@ -1,3 +1,4 @@
+@import url('https://fonts.googleapis.com/css2?family=Shippori+Mincho:wght@400;500;700;800&family=Noto+Serif+TC:wght@400;600;700&display=swap');@import url('https://fonts.googleapis.com/css2?family=Noto+Serif+JP:wght@400;500;700;900&family=Noto+Serif+TC:wght@400;500;700;900&display=swap');
 /* ─────────────────────────────────────────────
    1. RESET
 ───────────────────────────────────────────── */
@@ -5,11 +6,12 @@
   margin: 0;
   padding: 0;
   box-sizing: border-box;
+  /* Shippori Mincho first, Noto Serif TC catches the Zhuyin */
+  font-family: 'Shippori Mincho', 'Noto Serif TC', serif; 
 }
-
 body {
   background: #f5f3ef;
-  font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
+  font-family: 'Noto Serif TC', serif;
 }
 
 /* ─────────────────────────────────────────────
@@ -212,7 +214,6 @@ body {
 }
 
 #title-line {
-  /* Increased the ceiling to 12.5rem and the scaling factor to 8vw */
   font-size: clamp(4.5rem, 8vw, 12.5rem); 
   font-weight: 700;
   color: #c0392b;
@@ -225,12 +226,17 @@ body {
 
 #cursor {
   display: inline-block;
-  width: 2.5px; /* Slightly thicker to match the 1.4 scale */
+  width: 2.5px;
   height: 0.95em;
   background: #c0392b;
   margin-left: 4px;
-  animation: blink 0.9s step-end infinite;
   vertical-align: middle;
+  /* Removed the animation line from here */
+}
+
+@keyframes blink {
+  0%, 100% { opacity: 1; }
+  50% { opacity: 0; }
 }
 
 #subtitle {

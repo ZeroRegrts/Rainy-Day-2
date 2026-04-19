@@ -14,7 +14,6 @@
 
   <div id="app">
 
-    <!-- ── TOP NAV ── -->
     <div id="topnav" class="topnav-scaled">
       <a href="index.html" id="logo-mark">雨天</a>
       <div id="lang-toggle">
@@ -24,116 +23,108 @@
       </div>
     </div>
 
-    <!-- ── SECTION TABS ── -->
     <nav id="learn-tabs">
-      <button class="tab-btn active" data-tab="word">
-        <span class="tab-zh">單字</span>
-        <span class="tab-en">Word</span>
+      <button class="tab-btn active" data-tab="drill">
+        <span class="tab-zh">符號練習</span>
+        <span class="tab-en">Symbol Drill</span>
       </button>
-      <button class="tab-btn" data-tab="table">
-        <span class="tab-zh">對照表</span>
-        <span class="tab-en">Reference</span>
-      </button>
-      <button class="tab-btn" data-tab="keyboard">
-        <span class="tab-zh">鍵盤</span>
-        <span class="tab-en">Keyboard</span>
+      <button class="tab-btn" data-tab="words">
+        <span class="tab-zh">單字練習</span>
+        <span class="tab-en">Word Practice</span>
       </button>
     </nav>
 
-    <!-- ══════════════════════════════════════
-         TAB 1 — WORD EXPLORER
-    ══════════════════════════════════════ -->
-    <section id="tab-word" class="tab-panel active">
-
-      <div id="word-card">
-
-        <div id="word-notation-toggle">
-          <button class="notation-btn active" data-mode="zhuyin">注音</button>
-          <button class="notation-btn" data-mode="pinyin">拼音</button>
+    <!-- SYMBOL DRILL -->
+    <section id="tab-drill" class="tab-panel active">
+      <div id="drill-header">
+        <div id="drill-stats">
+          <div class="drill-stat">
+            <span class="drill-stat-label" id="lbl-streak">Streak</span>
+            <span class="drill-stat-value" id="drill-streak">0</span>
+          </div>
+          <div class="drill-stat">
+            <span class="drill-stat-label" id="lbl-accuracy">Accuracy</span>
+            <span class="drill-stat-value" id="drill-accuracy">—</span>
+          </div>
         </div>
-
-        <div id="word-display-area">
-          <div id="word-chars"></div>
-          <div id="word-notation"></div>
-          <div id="word-meaning"></div>
+        <div id="drill-group-nav">
+          <span class="group-link active" data-filter="all" id="glink-all">All</span>
+          <span class="group-link" data-filter="initials" id="glink-initials">Initials</span>
+          <span class="group-link" data-filter="medials" id="glink-medials">Medials</span>
+          <span class="group-link" data-filter="finals" id="glink-finals">Finals</span>
+          <span class="group-link" data-filter="tones" id="glink-tones">Tones</span>
         </div>
-
-        <div id="word-actions">
-          <button id="btn-next-word">
-            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M5 12h14M12 5l7 7-7 7"/></svg>
-            <span id="next-label">Next Word</span>
-          </button>
-        </div>
-
-        <div id="word-counter"></div>
       </div>
 
-      <!-- mini zhuyin key legend below card -->
-      <div id="word-hint">
-        <span id="word-hint-label">Each syllable shown above has a Zhuyin symbol — find it on the keyboard tab</span>
+      <div id="drill-mastery-row"></div>
+
+      <div id="drill-main">
+        <div id="drill-card">
+          <div id="drill-category-tag"></div>
+          <div id="drill-symbol">ㄅ</div>
+          <div id="drill-pinyin-hint">b</div>
+          <div id="drill-expected-key"></div>
+          <div id="drill-instruction">Press the key on your QWERTY keyboard</div>
+          <div id="drill-feedback"></div>
+        </div>
       </div>
 
-    </section>
-
-    <!-- ══════════════════════════════════════
-         TAB 2 — ZHUYIN ↔ QWERTY TABLE
-    ══════════════════════════════════════ -->
-    <section id="tab-table" class="tab-panel">
-
-      <div id="table-header">
-        <h2 id="table-title">注音 / QWERTY Reference</h2>
-        <p id="table-subtitle">Every Zhuyin symbol and its keyboard key</p>
+      <div id="drill-toggles">
+        <button class="toggle-btn active" id="btn-show-pinyin">Pinyin</button>
+        <button class="toggle-btn active" id="btn-show-key">Show key</button>
+        <button class="toggle-btn" id="btn-show-keyboard">Keyboard map</button>
       </div>
 
-      <div id="zhuyin-table-wrap">
-
-        <div class="zy-group">
-          <div class="zy-group-label" id="label-initials">Initials 聲母</div>
-          <div class="zy-grid" id="grid-initials"></div>
-        </div>
-
-        <div class="zy-group">
-          <div class="zy-group-label" id="label-medials">Medials 介母</div>
-          <div class="zy-grid" id="grid-medials"></div>
-        </div>
-
-        <div class="zy-group">
-          <div class="zy-group-label" id="label-finals">Finals 韻母</div>
-          <div class="zy-grid" id="grid-finals"></div>
-        </div>
-
-        <div class="zy-group">
-          <div class="zy-group-label" id="label-tones">Tones 聲調</div>
-          <div class="zy-grid" id="grid-tones"></div>
-        </div>
-
+      <div id="drill-keyboard-hint" class="hint-hidden">
+        <div id="drill-kb"></div>
       </div>
     </section>
 
-    <!-- ══════════════════════════════════════
-         TAB 3 — KEYBOARD OVERLAY
-    ══════════════════════════════════════ -->
-    <section id="tab-keyboard" class="tab-panel">
-
-      <div id="keyboard-header">
-        <h2 id="kb-title">Zhuyin Keyboard Layout</h2>
-        <p id="kb-subtitle">Standard Zhuyin input — as seen on a Taiwanese keyboard</p>
+    <!-- WORD PRACTICE -->
+    <section id="tab-words" class="tab-panel">
+      <div id="word-header">
+        <div id="hsk-pills">
+          <button class="hsk-pill active" data-hsk="1">HSK 1</button>
+          <button class="hsk-pill" data-hsk="2">HSK 2</button>
+          <button class="hsk-pill" data-hsk="3">HSK 3</button>
+        </div>
+        <div id="word-progress-wrap">
+          <div id="word-progress-bar"><div id="word-progress-fill"></div></div>
+          <span id="word-progress-label">0 / 0</span>
+        </div>
+        <div id="word-toggles">
+          <button class="toggle-btn active" id="btn-show-zhuyin">Zhuyin</button>
+          <button class="toggle-btn active" id="btn-show-keys">Key sequence</button>
+        </div>
       </div>
 
-      <div id="keyboard-wrap">
-        <div id="keyboard"></div>
+      <div id="word-main">
+        <div id="word-card">
+          <div id="word-chars-row"></div>
+          <div id="word-key-sequence"></div>
+          <div id="word-meaning-label"></div>
+          <div id="word-feedback"></div>
+          <input id="word-input" type="text"
+            autocomplete="off" autocorrect="off" autocapitalize="off" spellcheck="false"
+            placeholder="Type the word..." />
+          <div id="word-hint-label">Enable your zhuyin input method</div>
+        </div>
       </div>
 
-      <div id="kb-legend">
-        <span class="kb-legend-item"><span class="kb-dot kb-dot-zh"></span><span id="legend-zh">Zhuyin</span></span>
-        <span class="kb-legend-item"><span class="kb-dot kb-dot-qwerty"></span><span id="legend-qwerty">QWERTY</span></span>
-        <span class="kb-legend-item"><span class="kb-dot kb-dot-tone"></span><span id="legend-tone">Tone key</span></span>
+      <div id="word-score-screen" class="hint-hidden">
+        <div id="word-score-card">
+          <div id="score-title">Session Complete</div>
+          <div id="score-number"></div>
+          <div id="score-pct"></div>
+          <div id="score-buttons">
+            <button id="btn-try-again">Try Again</button>
+            <button id="btn-next-level">Next Level</button>
+          </div>
+        </div>
       </div>
-
     </section>
 
-  </div><!-- /#app -->
-
+  </div>
   <script src="learn.js"></script>
 </body>
 </html>

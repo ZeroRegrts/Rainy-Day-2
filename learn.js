@@ -1,208 +1,209 @@
 /* ─────────────────────────────────────────────
-   learn.js  —  雨天 Learn Page
+   learn.js — 雨天 Learn Page (v2)
 ───────────────────────────────────────────── */
 
 /* ══════════════════════════════════════════════
-   1. ZHUYIN ↔ QWERTY DATA
-   Standard Zhuyin input method (Traditional keyboard layout)
+   1. VERIFIED MICROSOFT BOPOMOFO LAYOUT
 ══════════════════════════════════════════════ */
-const INITIALS = [
-  { zh: 'ㄅ', key: 'b' }, { zh: 'ㄆ', key: 'p' }, { zh: 'ㄇ', key: 'm' }, { zh: 'ㄈ', key: 'f' },
-  { zh: 'ㄉ', key: 'd' }, { zh: 'ㄊ', key: 't' }, { zh: 'ㄋ', key: 'n' }, { zh: 'ㄌ', key: 'l' },
-  { zh: 'ㄍ', key: 'g' }, { zh: 'ㄎ', key: 'k' }, { zh: 'ㄏ', key: 'h' },
-  { zh: 'ㄐ', key: 'j' }, { zh: 'ㄑ', key: 'q' }, { zh: 'ㄒ', key: 'x' },
-  { zh: 'ㄓ', key: 'zh' }, { zh: 'ㄔ', key: 'ch' }, { zh: 'ㄕ', key: 'sh' }, { zh: 'ㄖ', key: 'r' },
-  { zh: 'ㄗ', key: 'z' }, { zh: 'ㄘ', key: 'c' }, { zh: 'ㄙ', key: 's' },
-];
+const BOPOMOFO_MAP = {
+  '1':'ㄅ','2':'ㄉ','3':'ˇ','4':'ˋ','5':'ㄓ','6':'ˊ','7':'˙',
+  '8':'ㄚ','9':'ㄞ','0':'ㄢ','-':'ㄦ',
+  'q':'ㄆ','w':'ㄊ','e':'ㄍ','r':'ㄐ','t':'ㄔ','y':'ㄗ',
+  'u':'ㄧ','i':'ㄛ','o':'ㄟ','p':'ㄣ',
+  'a':'ㄇ','s':'ㄋ','d':'ㄎ','f':'ㄑ','g':'ㄕ','h':'ㄘ',
+  'j':'ㄨ','k':'ㄜ','l':'ㄠ',';':'ㄤ',
+  'z':'ㄈ','x':'ㄌ','c':'ㄏ','v':'ㄒ','b':'ㄖ',
+  'n':'ㄙ','m':'ㄩ',',':'ㄝ','.':'ㄡ','/':'ㄥ',
+  ' ':'1st',
+};
 
-const MEDIALS = [
-  { zh: 'ㄧ', key: 'i' }, { zh: 'ㄨ', key: 'u' }, { zh: 'ㄩ', key: 'iu' },
-];
+const ZHUYIN_TO_KEY = {};
+Object.entries(BOPOMOFO_MAP).forEach(([k,v]) => { ZHUYIN_TO_KEY[v] = k; });
 
-const FINALS = [
-  { zh: 'ㄚ', key: 'a' }, { zh: 'ㄛ', key: 'o' }, { zh: 'ㄜ', key: 'e' },
-  { zh: 'ㄝ', key: 'ê' }, { zh: 'ㄞ', key: 'ai' }, { zh: 'ㄟ', key: 'ei' },
-  { zh: 'ㄠ', key: 'ao' }, { zh: 'ㄡ', key: 'ou' },
-  { zh: 'ㄢ', key: 'an' }, { zh: 'ㄣ', key: 'en' }, { zh: 'ㄤ', key: 'ang' }, { zh: 'ㄥ', key: 'eng' },
-  { zh: 'ㄦ', key: 'er' },
-];
-
-const TONES = [
-  { zh: '˙', key: '5', label: 'Neutral' },
-  { zh: 'ˊ', key: '2', label: '2nd' },
-  { zh: 'ˇ', key: '3', label: '3rd' },
-  { zh: 'ˋ', key: '4', label: '4th' },
-  { zh: '（1st）', key: '(none)', label: '1st = no key' },
-];
-
-/* Standard Zhuyin keyboard layout (key → zhuyin) */
 const KB_ROWS = [
   [
-    { qwerty: '1', zh: '',    tone: true,  label: '˙ (5)' },
-    { qwerty: '2', zh: '',    tone: true,  label: 'ˊ (2)' },
-    { qwerty: '3', zh: '',    tone: true,  label: 'ˇ (3)' },
-    { qwerty: '4', zh: '',    tone: true,  label: 'ˋ (4)' },
-    { qwerty: '5', zh: 'ㄍ',  tone: false },
-    { qwerty: '6', zh: 'ㄐ',  tone: false },
-    { qwerty: '7', zh: 'ㄓ',  tone: false },
-    { qwerty: '8', zh: 'ㄗ',  tone: false },
-    { qwerty: '9', zh: 'ㄘ',  tone: false },
-    { qwerty: '0', zh: 'ㄙ',  tone: false },
-    { qwerty: '-', zh: '',    tone: false },
-    { qwerty: '=', zh: '',    tone: false },
+    {key:'1',zh:'ㄅ'},{key:'2',zh:'ㄉ'},{key:'3',zh:'ˇ',tone:true},{key:'4',zh:'ˋ',tone:true},
+    {key:'5',zh:'ㄓ'},{key:'6',zh:'ˊ',tone:true},{key:'7',zh:'˙',tone:true},
+    {key:'8',zh:'ㄚ'},{key:'9',zh:'ㄞ'},{key:'0',zh:'ㄢ'},{key:'-',zh:'ㄦ'},
   ],
   [
-    { qwerty: 'Q', zh: 'ㄆ',  tone: false },
-    { qwerty: 'W', zh: 'ㄊ',  tone: false },
-    { qwerty: 'E', zh: 'ㄋ',  tone: false },
-    { qwerty: 'R', zh: 'ㄖ',  tone: false },
-    { qwerty: 'T', zh: 'ㄐ',  tone: false },
-    { qwerty: 'Y', zh: 'ㄑ',  tone: false },
-    { qwerty: 'U', zh: 'ㄧ',  tone: false },
-    { qwerty: 'I', zh: 'ㄛ',  tone: false },
-    { qwerty: 'O', zh: 'ㄞ',  tone: false },
-    { qwerty: 'P', zh: 'ㄢ',  tone: false },
-    { qwerty: '[', zh: 'ㄣ',  tone: false },
-    { qwerty: ']', zh: 'ㄤ',  tone: false },
+    {key:'Q',zh:'ㄆ'},{key:'W',zh:'ㄊ'},{key:'E',zh:'ㄍ'},{key:'R',zh:'ㄐ'},
+    {key:'T',zh:'ㄔ'},{key:'Y',zh:'ㄗ'},{key:'U',zh:'ㄧ'},{key:'I',zh:'ㄛ'},
+    {key:'O',zh:'ㄟ'},{key:'P',zh:'ㄣ'},
   ],
   [
-    { qwerty: 'A', zh: 'ㄇ',  tone: false },
-    { qwerty: 'S', zh: 'ㄋ',  tone: false },
-    { qwerty: 'D', zh: 'ㄉ',  tone: false },
-    { qwerty: 'F', zh: 'ㄈ',  tone: false },
-    { qwerty: 'G', zh: 'ㄍ',  tone: false },
-    { qwerty: 'H', zh: 'ㄏ',  tone: false },
-    { qwerty: 'J', zh: 'ㄨ',  tone: false },
-    { qwerty: 'K', zh: 'ㄜ',  tone: false },
-    { qwerty: 'L', zh: 'ㄟ',  tone: false },
-    { qwerty: ';', zh: 'ㄢ',  tone: false },
-    { qwerty: "'", zh: 'ㄥ',  tone: false },
+    {key:'A',zh:'ㄇ'},{key:'S',zh:'ㄋ'},{key:'D',zh:'ㄎ'},{key:'F',zh:'ㄑ'},
+    {key:'G',zh:'ㄕ'},{key:'H',zh:'ㄘ'},{key:'J',zh:'ㄨ'},{key:'K',zh:'ㄜ'},
+    {key:'L',zh:'ㄠ'},{key:';',zh:'ㄤ'},
   ],
   [
-    { qwerty: 'Z', zh: 'ㄈ',  tone: false },
-    { qwerty: 'X', zh: 'ㄌ',  tone: false },
-    { qwerty: 'C', zh: 'ㄔ',  tone: false },
-    { qwerty: 'V', zh: 'ㄩ',  tone: false },
-    { qwerty: 'B', zh: 'ㄅ',  tone: false },
-    { qwerty: 'N', zh: 'ㄣ',  tone: false },
-    { qwerty: 'M', zh: 'ㄇ',  tone: false },
-    { qwerty: ',', zh: 'ㄝ',  tone: false },
-    { qwerty: '.', zh: 'ㄡ',  tone: false },
-    { qwerty: '/', zh: 'ㄦ',  tone: false },
+    {key:'Z',zh:'ㄈ'},{key:'X',zh:'ㄌ'},{key:'C',zh:'ㄏ'},{key:'V',zh:'ㄒ'},
+    {key:'B',zh:'ㄖ'},{key:'N',zh:'ㄙ'},{key:'M',zh:'ㄩ'},
+    {key:',',zh:'ㄝ'},{key:'.',zh:'ㄡ'},{key:'/',zh:'ㄥ'},
   ],
+  [{key:'SPACE',zh:'1st tone',tone:true,space:true}],
 ];
 
-/* accurate standard zhuyin keyboard — rows with correct layout */
-const KB_LAYOUT = [
-  [
-    { qwerty:'1', zh:'',   tone:true,  toneLabel:'˙' },
-    { qwerty:'2', zh:'',   tone:true,  toneLabel:'ˊ' },
-    { qwerty:'3', zh:'',   tone:true,  toneLabel:'ˇ' },
-    { qwerty:'4', zh:'',   tone:true,  toneLabel:'ˋ' },
-    { qwerty:'5', zh:'ㄍ', tone:false },
-    { qwerty:'6', zh:'ㄐ', tone:false },
-    { qwerty:'7', zh:'ㄓ', tone:false },
-    { qwerty:'8', zh:'ㄗ', tone:false },
-    { qwerty:'9', zh:'ㄘ', tone:false },
-    { qwerty:'0', zh:'ㄙ', tone:false },
-    { qwerty:'-', zh:'',  tone:false },
-    { qwerty:'=', zh:'',  tone:false },
-  ],
-  [
-    { qwerty:'Q', zh:'ㄆ', tone:false },
-    { qwerty:'W', zh:'ㄊ', tone:false },
-    { qwerty:'E', zh:'ㄋ', tone:false },
-    { qwerty:'R', zh:'ㄖ', tone:false },
-    { qwerty:'T', zh:'ㄐ', tone:false },
-    { qwerty:'Y', zh:'ㄑ', tone:false },
-    { qwerty:'U', zh:'ㄧ', tone:false },
-    { qwerty:'I', zh:'ㄛ', tone:false },
-    { qwerty:'O', zh:'ㄞ', tone:false },
-    { qwerty:'P', zh:'ㄢ', tone:false },
-    { qwerty:'[', zh:'ㄣ', tone:false },
-    { qwerty:']', zh:'ㄤ', tone:false },
-  ],
-  [
-    { qwerty:'A', zh:'ㄇ', tone:false },
-    { qwerty:'S', zh:'ㄋ', tone:false },
-    { qwerty:'D', zh:'ㄉ', tone:false },
-    { qwerty:'F', zh:'ㄈ', tone:false },
-    { qwerty:'G', zh:'ㄍ', tone:false },
-    { qwerty:'H', zh:'ㄏ', tone:false },
-    { qwerty:'J', zh:'ㄨ', tone:false },
-    { qwerty:'K', zh:'ㄜ', tone:false },
-    { qwerty:'L', zh:'ㄟ', tone:false },
-    { qwerty:';', zh:'ㄢ', tone:false },
-    { qwerty:"'", zh:'ㄥ', tone:false },
-  ],
-  [
-    { qwerty:'Z', zh:'ㄈ', tone:false },
-    { qwerty:'X', zh:'ㄌ', tone:false },
-    { qwerty:'C', zh:'ㄔ', tone:false },
-    { qwerty:'V', zh:'ㄩ', tone:false },
-    { qwerty:'B', zh:'ㄅ', tone:false },
-    { qwerty:'N', zh:'ㄣ', tone:false },
-    { qwerty:'M', zh:'ㄇ', tone:false },
-    { qwerty:',', zh:'ㄝ', tone:false },
-    { qwerty:'.', zh:'ㄡ', tone:false },
-    { qwerty:'/', zh:'ㄦ', tone:false },
-  ],
-  [
-    { qwerty:'SPACE', zh:'', tone:false, space:true },
-  ],
-];
+const PINYIN = {
+  'ㄅ':'b','ㄆ':'p','ㄇ':'m','ㄈ':'f',
+  'ㄉ':'d','ㄊ':'t','ㄋ':'n','ㄌ':'l',
+  'ㄍ':'g','ㄎ':'k','ㄏ':'h',
+  'ㄐ':'j','ㄑ':'q','ㄒ':'x',
+  'ㄓ':'zh','ㄔ':'ch','ㄕ':'sh','ㄖ':'r',
+  'ㄗ':'z','ㄘ':'c','ㄙ':'s',
+  'ㄚ':'a','ㄛ':'o','ㄜ':'e','ㄝ':'ê',
+  'ㄞ':'ai','ㄟ':'ei','ㄠ':'ao','ㄡ':'ou',
+  'ㄢ':'an','ㄣ':'en','ㄤ':'ang','ㄥ':'eng','ㄦ':'er',
+  'ㄧ':'i','ㄨ':'u','ㄩ':'ü',
+  'ˊ':'2nd tone','ˇ':'3rd tone','ˋ':'4th tone','˙':'neutral tone','1st':'1st tone (space)',
+};
 
 /* ══════════════════════════════════════════════
-   2. WORD BANK
-   Format: { chars, zhuyin, pinyin, meaning }
+   2. SYMBOL GROUPS
 ══════════════════════════════════════════════ */
-const WORD_BANK = [
-  { chars:'你好',   zhuyin:'ㄋㄧˇ ㄏㄠˇ',      pinyin:'nǐ hǎo',      meaning:'Hello' },
-  { chars:'謝謝',   zhuyin:'ㄒㄧㄝˋ ㄒㄧㄝ',   pinyin:'xiè xie',     meaning:'Thank you' },
-  { chars:'早安',   zhuyin:'ㄗㄠˇ ㄢ',          pinyin:'zǎo ān',      meaning:'Good morning' },
-  { chars:'晚安',   zhuyin:'ㄨㄢˇ ㄢ',          pinyin:'wǎn ān',      meaning:'Good night' },
-  { chars:'對不起', zhuyin:'ㄉㄨㄟˋ ㄅㄨˋ ㄑㄧˇ', pinyin:'duì bu qǐ', meaning:'Sorry' },
-  { chars:'沒關係', zhuyin:'ㄇㄟˊ ㄍㄨㄢ ㄒㄧ', pinyin:'méi guān xi', meaning:"It's okay" },
-  { chars:'再見',   zhuyin:'ㄗㄞˋ ㄐㄧㄢˋ',    pinyin:'zài jiàn',    meaning:'Goodbye' },
-  { chars:'請問',   zhuyin:'ㄑㄧㄥˇ ㄨㄣˋ',    pinyin:'qǐng wèn',   meaning:'Excuse me / May I ask' },
-  { chars:'我愛你', zhuyin:'ㄨㄛˇ ㄞˋ ㄋㄧˇ',  pinyin:'wǒ ài nǐ',   meaning:'I love you' },
-  { chars:'中文',   zhuyin:'ㄓㄨㄥ ㄨㄣˊ',     pinyin:'zhōng wén',   meaning:'Chinese language' },
-  { chars:'學習',   zhuyin:'ㄒㄩㄝˊ ㄒㄧˊ',   pinyin:'xué xí',      meaning:'To study / learn' },
-  { chars:'朋友',   zhuyin:'ㄆㄥˊ ㄧㄡˇ',     pinyin:'péng yǒu',    meaning:'Friend' },
-  { chars:'家人',   zhuyin:'ㄐㄧㄚ ㄖㄣˊ',    pinyin:'jiā rén',     meaning:'Family' },
-  { chars:'老師',   zhuyin:'ㄌㄠˇ ㄕ',         pinyin:'lǎo shī',     meaning:'Teacher' },
-  { chars:'學生',   zhuyin:'ㄒㄩㄝˊ ㄕㄥ',    pinyin:'xué shēng',   meaning:'Student' },
-  { chars:'好吃',   zhuyin:'ㄏㄠˇ ㄔ',         pinyin:'hǎo chī',     meaning:'Delicious' },
-  { chars:'漂亮',   zhuyin:'ㄆㄧㄠˋ ㄌㄧㄤˋ', pinyin:'piào liàng',  meaning:'Beautiful' },
-  { chars:'加油',   zhuyin:'ㄐㄧㄚ ㄧㄡˊ',    pinyin:'jiā yóu',     meaning:'Keep it up!' },
-  { chars:'沒問題', zhuyin:'ㄇㄟˊ ㄨㄣˋ ㄊㄧˊ', pinyin:'méi wèn tí', meaning:'No problem' },
-  { chars:'台灣',   zhuyin:'ㄊㄞˊ ㄨㄢ',      pinyin:'Tái wān',     meaning:'Taiwan' },
-  { chars:'台北',   zhuyin:'ㄊㄞˊ ㄅㄟˇ',     pinyin:'Tái běi',     meaning:'Taipei' },
-  { chars:'吃飯',   zhuyin:'ㄔ ㄈㄢˋ',        pinyin:'chī fàn',     meaning:'To eat (a meal)' },
-  { chars:'喝水',   zhuyin:'ㄏㄜ ㄕㄨㄟˇ',   pinyin:'hē shuǐ',     meaning:'To drink water' },
-  { chars:'睡覺',   zhuyin:'ㄕㄨㄟˋ ㄐㄧㄠˋ', pinyin:'shuì jiào',  meaning:'To sleep' },
-  { chars:'工作',   zhuyin:'ㄍㄨㄥ ㄗㄨㄛˋ',  pinyin:'gōng zuò',   meaning:'Work / job' },
-  { chars:'電話',   zhuyin:'ㄉㄧㄢˋ ㄏㄨㄚˋ', pinyin:'diàn huà',   meaning:'Phone call / telephone' },
-  { chars:'手機',   zhuyin:'ㄕㄡˇ ㄐㄧ',      pinyin:'shǒu jī',    meaning:'Mobile phone' },
-  { chars:'天氣',   zhuyin:'ㄊㄧㄢ ㄑㄧˋ',   pinyin:'tiān qì',    meaning:'Weather' },
-  { chars:'音樂',   zhuyin:'ㄧㄣ ㄩㄝˋ',      pinyin:'yīn yuè',    meaning:'Music' },
-  { chars:'電影',   zhuyin:'ㄉㄧㄢˋ ㄧㄥˇ',  pinyin:'diàn yǐng',  meaning:'Movie / film' },
-  { chars:'書',     zhuyin:'ㄕㄨ',             pinyin:'shū',        meaning:'Book' },
-  { chars:'貓',     zhuyin:'ㄇㄠ',             pinyin:'māo',        meaning:'Cat' },
-  { chars:'狗',     zhuyin:'ㄍㄡˇ',            pinyin:'gǒu',        meaning:'Dog' },
-  { chars:'水',     zhuyin:'ㄕㄨㄟˇ',          pinyin:'shuǐ',       meaning:'Water' },
-  { chars:'火',     zhuyin:'ㄏㄨㄛˇ',          pinyin:'huǒ',        meaning:'Fire' },
-  { chars:'山',     zhuyin:'ㄕㄢ',             pinyin:'shān',       meaning:'Mountain' },
-  { chars:'海',     zhuyin:'ㄏㄞˇ',            pinyin:'hǎi',        meaning:'Sea / ocean' },
-  { chars:'雨天',   zhuyin:'ㄩˇ ㄊㄧㄢ',      pinyin:'yǔ tiān',    meaning:'Rainy day' },
+const GROUPS = {
+  initials: {
+    label: 'Initials · 聲母',
+    labelZh: '聲母',
+    symbols: ['ㄅ','ㄆ','ㄇ','ㄈ','ㄉ','ㄊ','ㄋ','ㄌ','ㄍ','ㄎ','ㄏ','ㄐ','ㄑ','ㄒ','ㄓ','ㄔ','ㄕ','ㄖ','ㄗ','ㄘ','ㄙ'],
+  },
+  medials: {
+    label: 'Medials · 介母',
+    labelZh: '介母',
+    symbols: ['ㄧ','ㄨ','ㄩ'],
+  },
+  finals: {
+    label: 'Finals · 韻母',
+    labelZh: '韻母',
+    symbols: ['ㄚ','ㄛ','ㄜ','ㄝ','ㄞ','ㄟ','ㄠ','ㄡ','ㄢ','ㄣ','ㄤ','ㄥ','ㄦ'],
+  },
+  tones: {
+    label: 'Tones · 聲調',
+    labelZh: '聲調',
+    symbols: ['ˊ','ˇ','ˋ','˙','1st'],
+  },
+};
+
+const ALL_SYMBOLS = [
+  ...GROUPS.initials.symbols,
+  ...GROUPS.medials.symbols,
+  ...GROUPS.finals.symbols,
+  ...GROUPS.tones.symbols,
 ];
 
+function getGroupOf(symbol) {
+  for (const [key, group] of Object.entries(GROUPS)) {
+    if (group.symbols.includes(symbol)) return key;
+  }
+  return 'all';
+}
+
+function getGroupLabel(symbol) {
+  for (const group of Object.values(GROUPS)) {
+    if (group.symbols.includes(symbol)) return group.label;
+  }
+  return '';
+}
+
 /* ══════════════════════════════════════════════
-   3. STATE
+   3. WORD BANKS (HSK with key sequences)
 ══════════════════════════════════════════════ */
-let currentWordIndex = -1;
-let notationMode = 'zhuyin'; // 'zhuyin' | 'pinyin'
-let usedIndices = [];
+
+/* Build key sequence string from zhuyin annotation.
+   Each zhuyin part (e.g. "ㄋㄧˇ") → array of keys.
+   Tones: ˊ=6, ˇ=3, ˋ=4, ˙=7, (none)=SPACE */
+function zhuyinToKeys(zhuyinStr) {
+  const toneMap = {'ˊ':'6','ˇ':'3','ˋ':'4','˙':'7'};
+  const tones = new Set(['ˊ','ˇ','ˋ','˙']);
+
+  const parts = zhuyinStr.split(' ');
+  const result = [];
+
+  parts.forEach(part => {
+    const keys = [];
+    let tone = 'SPACE';
+    for (const ch of part) {
+      if (tones.has(ch)) {
+        tone = toneMap[ch];
+      } else {
+        const k = ZHUYIN_TO_KEY[ch];
+        if (k) keys.push(k === ' ' ? 'SPACE' : k.toUpperCase());
+      }
+    }
+    keys.push(tone);
+    result.push(keys);
+  });
+  return result;
+}
+
+const WORD_BANKS = {
+  1: [
+    {chars:'你好',   zhuyin:'ㄋㄧˇ ㄏㄠˇ',          meaning:'Hello'},
+    {chars:'謝謝',   zhuyin:'ㄒㄧㄝˋ ㄒㄧㄝ',        meaning:'Thank you'},
+    {chars:'早安',   zhuyin:'ㄗㄠˇ ㄢ',              meaning:'Good morning'},
+    {chars:'晚安',   zhuyin:'ㄨㄢˇ ㄢ',              meaning:'Good night'},
+    {chars:'再見',   zhuyin:'ㄗㄞˋ ㄐㄧㄢˋ',        meaning:'Goodbye'},
+    {chars:'對不起', zhuyin:'ㄉㄨㄟˋ ㄅㄨˋ ㄑㄧˇ',   meaning:'Sorry'},
+    {chars:'沒關係', zhuyin:'ㄇㄟˊ ㄍㄨㄢ ㄒㄧ',     meaning:"It's okay"},
+    {chars:'請問',   zhuyin:'ㄑㄧㄥˇ ㄨㄣˋ',        meaning:'Excuse me'},
+    {chars:'中文',   zhuyin:'ㄓㄨㄥ ㄨㄣˊ',         meaning:'Chinese language'},
+    {chars:'台灣',   zhuyin:'ㄊㄞˊ ㄨㄢ',           meaning:'Taiwan'},
+    {chars:'台北',   zhuyin:'ㄊㄞˊ ㄅㄟˇ',          meaning:'Taipei'},
+    {chars:'學習',   zhuyin:'ㄒㄩㄝˊ ㄒㄧˊ',        meaning:'To study'},
+    {chars:'朋友',   zhuyin:'ㄆㄥˊ ㄧㄡˇ',          meaning:'Friend'},
+    {chars:'老師',   zhuyin:'ㄌㄠˇ ㄕ',             meaning:'Teacher'},
+    {chars:'學生',   zhuyin:'ㄒㄩㄝˊ ㄕㄥ',         meaning:'Student'},
+    {chars:'吃飯',   zhuyin:'ㄔ ㄈㄢˋ',             meaning:'To eat a meal'},
+    {chars:'喝水',   zhuyin:'ㄏㄜ ㄕㄨㄟˇ',         meaning:'Drink water'},
+    {chars:'睡覺',   zhuyin:'ㄕㄨㄟˋ ㄐㄧㄠˋ',      meaning:'To sleep'},
+    {chars:'加油',   zhuyin:'ㄐㄧㄚ ㄧㄡˊ',         meaning:'Keep it up'},
+    {chars:'沒問題', zhuyin:'ㄇㄟˊ ㄨㄣˋ ㄊㄧˊ',    meaning:'No problem'},
+  ],
+  2: [
+    {chars:'工作',   zhuyin:'ㄍㄨㄥ ㄗㄨㄛˋ',       meaning:'Work / job'},
+    {chars:'電話',   zhuyin:'ㄉㄧㄢˋ ㄏㄨㄚˋ',      meaning:'Phone call'},
+    {chars:'手機',   zhuyin:'ㄕㄡˇ ㄐㄧ',           meaning:'Mobile phone'},
+    {chars:'天氣',   zhuyin:'ㄊㄧㄢ ㄑㄧˋ',         meaning:'Weather'},
+    {chars:'音樂',   zhuyin:'ㄧㄣ ㄩㄝˋ',           meaning:'Music'},
+    {chars:'電影',   zhuyin:'ㄉㄧㄢˋ ㄧㄥˇ',        meaning:'Movie'},
+    {chars:'好吃',   zhuyin:'ㄏㄠˇ ㄔ',             meaning:'Delicious'},
+    {chars:'漂亮',   zhuyin:'ㄆㄧㄠˋ ㄌㄧㄤˋ',      meaning:'Beautiful'},
+    {chars:'高興',   zhuyin:'ㄍㄠ ㄒㄧㄥˋ',         meaning:'Happy'},
+    {chars:'知道',   zhuyin:'ㄓ ㄉㄠˋ',             meaning:'To know'},
+    {chars:'喜歡',   zhuyin:'ㄒㄧˇ ㄏㄨㄢ',         meaning:'To like'},
+    {chars:'可以',   zhuyin:'ㄎㄜˇ ㄧˇ',            meaning:'Can / may'},
+    {chars:'覺得',   zhuyin:'ㄐㄩㄝˊ ㄉㄜ',         meaning:'To feel / think'},
+    {chars:'時間',   zhuyin:'ㄕˊ ㄐㄧㄢ',           meaning:'Time'},
+    {chars:'東西',   zhuyin:'ㄉㄨㄥ ㄒㄧ',          meaning:'Things / stuff'},
+    {chars:'問題',   zhuyin:'ㄨㄣˋ ㄊㄧˊ',          meaning:'Problem / question'},
+    {chars:'開始',   zhuyin:'ㄎㄞ ㄕˇ',             meaning:'To begin'},
+    {chars:'結束',   zhuyin:'ㄐㄧㄝˊ ㄕㄨˋ',        meaning:'To end'},
+    {chars:'練習',   zhuyin:'ㄌㄧㄢˋ ㄒㄧˊ',        meaning:'To practice'},
+    {chars:'快樂',   zhuyin:'ㄎㄨㄞˋ ㄌㄜˋ',        meaning:'Happy / joyful'},
+  ],
+  3: [
+    {chars:'文化',   zhuyin:'ㄨㄣˊ ㄏㄨㄚˋ',        meaning:'Culture'},
+    {chars:'歷史',   zhuyin:'ㄌㄧˋ ㄕˇ',            meaning:'History'},
+    {chars:'經濟',   zhuyin:'ㄐㄧㄥ ㄐㄧˋ',         meaning:'Economy'},
+    {chars:'環境',   zhuyin:'ㄏㄨㄢˊ ㄐㄧㄥˋ',      meaning:'Environment'},
+    {chars:'發展',   zhuyin:'ㄈㄚ ㄓㄢˇ',           meaning:'Development'},
+    {chars:'影響',   zhuyin:'ㄧㄥˇ ㄒㄧㄤˇ',        meaning:'Influence'},
+    {chars:'重要',   zhuyin:'ㄓㄨㄥˋ ㄧㄠˋ',        meaning:'Important'},
+    {chars:'社會',   zhuyin:'ㄕㄜˋ ㄏㄨㄟˋ',        meaning:'Society'},
+    {chars:'科技',   zhuyin:'ㄎㄜ ㄐㄧˋ',           meaning:'Technology'},
+    {chars:'傳統',   zhuyin:'ㄔㄨㄢˊ ㄊㄨㄥˇ',      meaning:'Tradition'},
+    {chars:'現代',   zhuyin:'ㄒㄧㄢˋ ㄉㄞˋ',        meaning:'Modern'},
+    {chars:'自然',   zhuyin:'ㄗˋ ㄖㄢˊ',            meaning:'Nature'},
+    {chars:'藝術',   zhuyin:'ㄧˋ ㄕㄨˋ',            meaning:'Art'},
+    {chars:'教育',   zhuyin:'ㄐㄧㄠˋ ㄩˋ',          meaning:'Education'},
+    {chars:'健康',   zhuyin:'ㄐㄧㄢˋ ㄎㄤ',         meaning:'Health'},
+    {chars:'幸福',   zhuyin:'ㄒㄧㄥˋ ㄈㄨˊ',        meaning:'Happiness'},
+    {chars:'機會',   zhuyin:'ㄐㄧ ㄏㄨㄟˋ',         meaning:'Opportunity'},
+    {chars:'努力',   zhuyin:'ㄋㄨˇ ㄌㄧˋ',          meaning:'Hard work'},
+    {chars:'成功',   zhuyin:'ㄔㄥˊ ㄍㄨㄥ',         meaning:'Success'},
+    {chars:'裝備',   zhuyin:'ㄓㄨㄤ ㄅㄟˋ',         meaning:'Equipment / gear'},
+  ],
+};
 
 /* ══════════════════════════════════════════════
    4. TAB SWITCHING
@@ -217,191 +218,410 @@ document.querySelectorAll('.tab-btn').forEach(btn => {
 });
 
 /* ══════════════════════════════════════════════
-   5. WORD EXPLORER
+   5. SYMBOL DRILL
 ══════════════════════════════════════════════ */
-function pickNextWord() {
-  if (usedIndices.length >= WORD_BANK.length) usedIndices = [];
-  let idx;
-  do { idx = Math.floor(Math.random() * WORD_BANK.length); }
-  while (usedIndices.includes(idx));
-  usedIndices.push(idx);
-  currentWordIndex = idx;
-  renderWord();
+let drillFilter = 'all';
+let drillShowPinyin = true;
+let drillShowKey = true;
+let drillShowKeyboard = false;
+let drillStreak = 0;
+let drillCorrect = 0;
+let drillTotal = 0;
+let drillLocked = false;
+let currentSymbol = null;
+
+/* mastery: 0 = unseen, 1 = seen, 2 = getting it, 3 = mastered */
+const mastery = {};
+ALL_SYMBOLS.forEach(s => { mastery[s] = 0; });
+
+/* spaced repetition weights — wrong answers increase weight */
+const weights = {};
+ALL_SYMBOLS.forEach(s => { weights[s] = 1; });
+
+function getPool() {
+  if (drillFilter === 'all') return ALL_SYMBOLS;
+  return GROUPS[drillFilter]?.symbols || ALL_SYMBOLS;
 }
 
-function renderWord() {
-  const w = WORD_BANK[currentWordIndex];
-  const charEl     = document.getElementById('word-chars');
-  const notationEl = document.getElementById('word-notation');
-  const meaningEl  = document.getElementById('word-meaning');
-  const counterEl  = document.getElementById('word-counter');
-
-  /* fade out */
-  charEl.style.opacity = '0';
-  notationEl.style.opacity = '0';
-
-  setTimeout(() => {
-    charEl.textContent     = w.chars;
-    notationEl.textContent = notationMode === 'zhuyin' ? w.zhuyin : w.pinyin;
-    meaningEl.textContent  = w.meaning;
-    counterEl.textContent  = (usedIndices.length) + ' / ' + WORD_BANK.length;
-    charEl.style.opacity = '1';
-    notationEl.style.opacity = '1';
-  }, 140);
+function pickSymbol() {
+  const pool = getPool();
+  const w = pool.map(s => weights[s]);
+  const total = w.reduce((a, b) => a + b, 0);
+  let r = Math.random() * total;
+  for (let i = 0; i < pool.length; i++) {
+    r -= w[i];
+    if (r <= 0) return pool[i];
+  }
+  return pool[pool.length - 1];
 }
 
-document.getElementById('btn-next-word').addEventListener('click', pickNextWord);
-
-document.querySelectorAll('.notation-btn').forEach(btn => {
-  btn.addEventListener('click', () => {
-    document.querySelectorAll('.notation-btn').forEach(b => b.classList.remove('active'));
-    btn.classList.add('active');
-    notationMode = btn.dataset.mode;
-    if (currentWordIndex >= 0) renderWord();
+function renderMasteryDots() {
+  const pool = getPool();
+  const row = document.getElementById('drill-mastery-row');
+  row.innerHTML = '';
+  pool.forEach(s => {
+    const dot = document.createElement('div');
+    dot.className = 'mastery-dot level-' + mastery[s];
+    dot.title = s + (PINYIN[s] ? ' · ' + PINYIN[s] : '');
+    row.appendChild(dot);
   });
-});
-
-/* initialise with first word */
-pickNextWord();
-
-/* ══════════════════════════════════════════════
-   6. REFERENCE TABLE
-══════════════════════════════════════════════ */
-function buildCell(item, isTone = false) {
-  const cell = document.createElement('div');
-  cell.className = 'zy-cell' + (isTone ? ' tone-cell' : '');
-
-  const sym = document.createElement('div');
-  sym.className = 'zy-sym';
-  sym.textContent = isTone ? item.zh : item.zh;
-
-  const key = document.createElement('div');
-  key.className = 'zy-key';
-  key.textContent = (item.key || item.label || '').toUpperCase();
-
-  cell.appendChild(sym);
-  cell.appendChild(key);
-  return cell;
 }
 
-function buildGrid(containerId, data, isTone = false) {
-  const grid = document.getElementById(containerId);
-  data.forEach(item => grid.appendChild(buildCell(item, isTone)));
+function renderExpectedKey(symbol, wrongKey) {
+  const el = document.getElementById('drill-expected-key');
+  el.innerHTML = '';
+
+  if (!drillShowKey && !wrongKey) return;
+
+  const expectedKey = ZHUYIN_TO_KEY[symbol];
+  const displayKey = symbol === '1st' ? 'SPACE' : expectedKey?.toUpperCase();
+
+  if (wrongKey) {
+    const wrongBadge = document.createElement('span');
+    wrongBadge.className = 'key-badge wrong-key';
+    wrongBadge.textContent = wrongKey === ' ' ? 'SPACE' : wrongKey.toUpperCase();
+    el.appendChild(wrongBadge);
+
+    const arrow = document.createElement('span');
+    arrow.textContent = '→';
+    arrow.style.cssText = 'color:#ddd;font-size:14px;';
+    el.appendChild(arrow);
+
+    const correctBadge = document.createElement('span');
+    correctBadge.className = 'key-badge correct-key';
+    correctBadge.textContent = displayKey;
+    el.appendChild(correctBadge);
+  } else if (drillShowKey && displayKey) {
+    const badge = document.createElement('span');
+    badge.className = 'key-badge';
+    badge.textContent = displayKey;
+    el.appendChild(badge);
+  }
 }
 
-buildGrid('grid-initials', INITIALS);
-buildGrid('grid-medials',  MEDIALS);
-buildGrid('grid-finals',   FINALS);
-buildGrid('grid-tones',    TONES, true);
+function renderDrillSymbol() {
+  currentSymbol = pickSymbol();
+  drillLocked = false;
 
-/* ══════════════════════════════════════════════
-   7. KEYBOARD VISUAL
-══════════════════════════════════════════════ */
-function buildKeyboard() {
-  const kb = document.getElementById('keyboard');
+  const symEl = document.getElementById('drill-symbol');
+  symEl.textContent = currentSymbol === '1st' ? '（1声）' : currentSymbol;
+  symEl.className = '';
+
+  document.getElementById('drill-category-tag').textContent = getGroupLabel(currentSymbol);
+  document.getElementById('drill-pinyin-hint').textContent = PINYIN[currentSymbol] || '';
+  document.getElementById('drill-pinyin-hint').classList.toggle('hint-hidden', !drillShowPinyin);
+  document.getElementById('drill-feedback').textContent = '';
+
+  renderExpectedKey(currentSymbol, null);
+  if (drillShowKeyboard) renderKeyboard(null, null);
+  renderMasteryDots();
+}
+
+function renderKeyboard(highlightKey, wrongKey) {
+  const kb = document.getElementById('drill-kb');
   kb.innerHTML = '';
-
-  KB_LAYOUT.forEach(row => {
+  KB_ROWS.forEach(row => {
     const rowEl = document.createElement('div');
     rowEl.className = 'kb-row';
-
     row.forEach(k => {
       const keyEl = document.createElement('div');
+      const kLower = k.key.toLowerCase();
+      let cls = 'kb-key';
+      if (k.tone) cls += ' tone-key';
+      if (k.space) cls += ' space-key';
+      if (highlightKey && kLower === highlightKey.toLowerCase()) cls += ' kb-active';
+      if (wrongKey && kLower === wrongKey.toLowerCase()) cls += ' kb-wrong';
+      keyEl.className = cls;
 
-      if (k.space) {
-        keyEl.className = 'kb-key space-key';
-        const qEl = document.createElement('div');
-        qEl.className = 'kk-qwerty';
-        qEl.textContent = 'SPACE';
-        keyEl.appendChild(qEl);
-      } else {
-        keyEl.className = 'kb-key' + (k.tone ? ' tone-key' : '');
+      const zhEl = document.createElement('div');
+      zhEl.className = 'kk-zh';
+      zhEl.textContent = k.space ? '1st' : k.zh;
 
-        const zhEl = document.createElement('div');
-        zhEl.className = 'kk-zh';
-        zhEl.textContent = k.tone ? (k.toneLabel || '') : (k.zh || '');
+      const qEl = document.createElement('div');
+      qEl.className = 'kk-qwerty';
+      qEl.textContent = k.space ? 'SPACE' : k.key;
 
-        const qEl = document.createElement('div');
-        qEl.className = 'kk-qwerty';
-        qEl.textContent = k.qwerty;
-
-        keyEl.appendChild(zhEl);
-        keyEl.appendChild(qEl);
-      }
-
+      keyEl.appendChild(zhEl);
+      keyEl.appendChild(qEl);
       rowEl.appendChild(keyEl);
     });
-
     kb.appendChild(rowEl);
   });
 }
 
-buildKeyboard();
+function handleDrillKey(e) {
+  if (!document.getElementById('tab-drill').classList.contains('active')) return;
+  if (drillLocked) return;
+  if (e.ctrlKey || e.metaKey || e.altKey) return;
+
+  const pressed = e.key.toLowerCase();
+  const validKeys = new Set([...Object.keys(BOPOMOFO_MAP), ' ']);
+  if (!validKeys.has(pressed)) return;
+
+  e.preventDefault();
+
+  const expectedKey = ZHUYIN_TO_KEY[currentSymbol];
+  const isSpace = currentSymbol === '1st';
+  const pressedCorrect = isSpace ? pressed === ' ' : pressed === expectedKey;
+
+  drillTotal++;
+  const symEl = document.getElementById('drill-symbol');
+
+  if (pressedCorrect) {
+    drillCorrect++;
+    drillStreak++;
+    /* increase mastery, max 3 */
+    mastery[currentSymbol] = Math.min(3, mastery[currentSymbol] + 1);
+    /* reduce weight */
+    weights[currentSymbol] = Math.max(0.3, weights[currentSymbol] * 0.65);
+
+    symEl.classList.add('flash-correct');
+    document.getElementById('drill-feedback').textContent = '';
+    renderExpectedKey(currentSymbol, null);
+    if (drillShowKeyboard) renderKeyboard(expectedKey, null);
+
+    updateDrillStats();
+    setTimeout(renderDrillSymbol, 350);
+  } else {
+    drillStreak = 0;
+    /* reduce mastery, min 0 */
+    mastery[currentSymbol] = Math.max(0, mastery[currentSymbol] - 1);
+    /* increase weight */
+    weights[currentSymbol] = weights[currentSymbol] * 2.0;
+    drillLocked = true;
+
+    symEl.classList.add('flash-wrong');
+    renderExpectedKey(currentSymbol, pressed);
+    if (drillShowKeyboard) renderKeyboard(expectedKey, pressed);
+
+    const feedEl = document.getElementById('drill-feedback');
+    const expDisplay = isSpace ? 'SPACE' : expectedKey?.toUpperCase();
+    feedEl.textContent = 'Expected: ' + expDisplay;
+
+    updateDrillStats();
+
+    setTimeout(() => {
+      symEl.classList.remove('flash-wrong');
+      drillLocked = false;
+      renderExpectedKey(currentSymbol, null);
+      if (drillShowKeyboard) renderKeyboard(null, null);
+    }, 900);
+  }
+}
+
+function updateDrillStats() {
+  document.getElementById('drill-streak').textContent = drillStreak;
+  const acc = drillTotal > 0 ? Math.round((drillCorrect / drillTotal) * 100) + '%' : '—';
+  document.getElementById('drill-accuracy').textContent = acc;
+}
+
+document.addEventListener('keydown', handleDrillKey);
+
+/* group nav links */
+document.querySelectorAll('.group-link').forEach(link => {
+  link.addEventListener('click', () => {
+    document.querySelectorAll('.group-link').forEach(l => l.classList.remove('active'));
+    link.classList.add('active');
+    drillFilter = link.dataset.filter;
+    renderDrillSymbol();
+  });
+});
+
+/* toggles */
+document.getElementById('btn-show-pinyin').addEventListener('click', () => {
+  drillShowPinyin = !drillShowPinyin;
+  document.getElementById('btn-show-pinyin').classList.toggle('active', drillShowPinyin);
+  document.getElementById('drill-pinyin-hint').classList.toggle('hint-hidden', !drillShowPinyin);
+});
+
+document.getElementById('btn-show-key').addEventListener('click', () => {
+  drillShowKey = !drillShowKey;
+  document.getElementById('btn-show-key').classList.toggle('active', drillShowKey);
+  renderExpectedKey(currentSymbol, null);
+});
+
+document.getElementById('btn-show-keyboard').addEventListener('click', () => {
+  drillShowKeyboard = !drillShowKeyboard;
+  document.getElementById('btn-show-keyboard').classList.toggle('active', drillShowKeyboard);
+  const hintEl = document.getElementById('drill-keyboard-hint');
+  hintEl.classList.toggle('hint-hidden', !drillShowKeyboard);
+  if (drillShowKeyboard) renderKeyboard(null, null);
+});
 
 /* ══════════════════════════════════════════════
-   8. LANGUAGE TOGGLE  (mirrors main.js pattern)
+   6. WORD PRACTICE
 ══════════════════════════════════════════════ */
-const TRANSLATIONS = {
-  en: {
-    tabWord: 'Word', tabTable: 'Reference', tabKeyboard: 'Keyboard',
-    tableTitle: 'Zhuyin / QWERTY Reference',
-    tableSub: 'Every Zhuyin symbol and its keyboard key',
-    labelInitials: 'Initials', labelMedials: 'Medials',
-    labelFinals: 'Finals', labelTones: 'Tones',
-    kbTitle: 'Zhuyin Keyboard Layout',
-    kbSub: 'Standard Zhuyin input — as seen on a Taiwanese keyboard',
-    legendZh: 'Zhuyin', legendQwerty: 'QWERTY', legendTone: 'Tone key',
-    nextLabel: 'Next Word',
-    wordHint: 'Each syllable shown above has a Zhuyin symbol — find it on the keyboard tab',
-  },
-  zh: {
-    tabWord: '單字', tabTable: '對照表', tabKeyboard: '鍵盤',
-    tableTitle: '注音 / QWERTY 對照表',
-    tableSub: '每個注音符號與對應按鍵',
-    labelInitials: '聲母', labelMedials: '介母',
-    labelFinals: '韻母', labelTones: '聲調',
-    kbTitle: '注音鍵盤配置',
-    kbSub: '台灣標準注音輸入鍵盤',
-    legendZh: '注音', legendQwerty: '按鍵', legendTone: '聲調鍵',
-    nextLabel: '下一個',
-    wordHint: '上方每個音節都有注音符號，可在鍵盤頁查詢對應按鍵',
-  },
-};
+let wordHSK = 1;
+let wordList = [];
+let wordIndex = 0;
+let wordCorrect = 0;
+let wordShowZhuyin = true;
+let wordShowKeys = true;
+let wordLocked = false;
 
+function initWordSession() {
+  wordList = [...WORD_BANKS[wordHSK]].sort(() => Math.random() - 0.5);
+  wordIndex = 0;
+  wordCorrect = 0;
+  wordLocked = false;
+  document.getElementById('word-score-screen').classList.add('hint-hidden');
+  renderWord();
+  updateWordProgress();
+}
+
+function renderWord() {
+  const word = wordList[wordIndex];
+  if (!word) return;
+
+  const chars = [...word.chars];
+  const zhuyinParts = word.zhuyin.split(' ');
+  const row = document.getElementById('word-chars-row');
+  row.innerHTML = '';
+
+  chars.forEach((ch, i) => {
+    const block = document.createElement('div');
+    block.className = 'word-char-block';
+
+    const zy = document.createElement('div');
+    zy.className = 'word-char-zhuyin' + (wordShowZhuyin ? '' : ' hint-hidden');
+    zy.textContent = zhuyinParts[i] || '';
+
+    const hanzi = document.createElement('div');
+    hanzi.className = 'word-char-hanzi';
+    hanzi.textContent = ch;
+
+    block.appendChild(zy);
+    block.appendChild(hanzi);
+    row.appendChild(block);
+  });
+
+  /* key sequence */
+  const keySeqEl = document.getElementById('word-key-sequence');
+  keySeqEl.innerHTML = '';
+  keySeqEl.classList.toggle('hint-hidden', !wordShowKeys);
+
+  const keyGroups = zhuyinToKeys(word.zhuyin);
+  keyGroups.forEach((keys, gi) => {
+    if (gi > 0) {
+      const sep = document.createElement('span');
+      sep.className = 'word-key-sep';
+      sep.textContent = '·';
+      keySeqEl.appendChild(sep);
+    }
+    keys.forEach(k => {
+      const badge = document.createElement('span');
+      badge.className = 'key-badge';
+      badge.textContent = k;
+      keySeqEl.appendChild(badge);
+    });
+  });
+
+  document.getElementById('word-meaning-label').textContent = word.meaning;
+  document.getElementById('word-feedback').textContent = '';
+  document.getElementById('word-feedback').className = '';
+
+  const input = document.getElementById('word-input');
+  input.value = '';
+  input.className = '';
+  input.disabled = false;
+  wordLocked = false;
+  setTimeout(() => input.focus(), 50);
+}
+
+function updateWordProgress() {
+  const total = wordList.length;
+  const pct = total > 0 ? (wordIndex / total) * 100 : 0;
+  document.getElementById('word-progress-fill').style.width = pct + '%';
+  document.getElementById('word-progress-label').textContent = wordIndex + ' / ' + total;
+}
+
+function checkWord() {
+  if (wordLocked) return;
+  const word = wordList[wordIndex];
+  if (!word) return;
+
+  const input = document.getElementById('word-input');
+  const typed = input.value.trim();
+
+  if (typed === word.chars) {
+    wordCorrect++;
+    wordLocked = true;
+    input.classList.add('inp-correct');
+    const fb = document.getElementById('word-feedback');
+    fb.textContent = '✓';
+    fb.className = 'fb-correct';
+
+    setTimeout(() => {
+      wordIndex++;
+      updateWordProgress();
+      if (wordIndex >= wordList.length) showWordScore();
+      else renderWord();
+    }, 500);
+  } else if (typed.length >= word.chars.length) {
+    input.classList.add('inp-wrong');
+    const fb = document.getElementById('word-feedback');
+    fb.textContent = word.zhuyin;
+    fb.className = 'fb-wrong';
+    setTimeout(() => {
+      input.classList.remove('inp-wrong');
+      input.value = '';
+    }, 900);
+  }
+}
+
+function showWordScore() {
+  const total = wordList.length;
+  const pct = Math.round((wordCorrect / total) * 100);
+  document.getElementById('score-number').textContent = wordCorrect + ' / ' + total;
+  document.getElementById('score-pct').textContent = pct + '% correct';
+  document.getElementById('word-score-screen').classList.remove('hint-hidden');
+  document.getElementById('btn-next-level').style.display = wordHSK < 3 ? '' : 'none';
+}
+
+document.getElementById('word-input').addEventListener('input', checkWord);
+document.getElementById('word-input').addEventListener('keydown', e => {
+  if (e.key === 'Enter') checkWord();
+});
+
+document.getElementById('btn-show-zhuyin').addEventListener('click', () => {
+  wordShowZhuyin = !wordShowZhuyin;
+  document.getElementById('btn-show-zhuyin').classList.toggle('active', wordShowZhuyin);
+  document.querySelectorAll('.word-char-zhuyin').forEach(el => {
+    el.classList.toggle('hint-hidden', !wordShowZhuyin);
+  });
+});
+
+document.getElementById('btn-show-keys').addEventListener('click', () => {
+  wordShowKeys = !wordShowKeys;
+  document.getElementById('btn-show-keys').classList.toggle('active', wordShowKeys);
+  document.getElementById('word-key-sequence').classList.toggle('hint-hidden', !wordShowKeys);
+});
+
+document.querySelectorAll('.hsk-pill').forEach(pill => {
+  pill.addEventListener('click', () => {
+    document.querySelectorAll('.hsk-pill').forEach(p => p.classList.remove('active'));
+    pill.classList.add('active');
+    wordHSK = parseInt(pill.dataset.hsk);
+    initWordSession();
+  });
+});
+
+document.getElementById('btn-try-again').addEventListener('click', initWordSession);
+document.getElementById('btn-next-level').addEventListener('click', () => {
+  if (wordHSK < 3) {
+    wordHSK++;
+    document.querySelectorAll('.hsk-pill').forEach(p => {
+      p.classList.toggle('active', parseInt(p.dataset.hsk) === wordHSK);
+    });
+    initWordSession();
+  }
+});
+
+/* ══════════════════════════════════════════════
+   7. LANGUAGE TOGGLE
+══════════════════════════════════════════════ */
 function updateLanguage() {
   const lang = sessionStorage.getItem('lang') || 'zh';
-  const t = TRANSLATIONS[lang];
-
-  /* tabs */
-  const tabBtns = document.querySelectorAll('.tab-btn');
-  const tabKeys = ['Word','Table','Keyboard'];
-  tabBtns[0].querySelector('.tab-zh').textContent = lang === 'zh' ? '單字' : 'Word';
-  tabBtns[0].querySelector('.tab-en').textContent = lang === 'zh' ? 'Word' : '單字';
-  tabBtns[1].querySelector('.tab-zh').textContent = lang === 'zh' ? '對照表' : 'Reference';
-  tabBtns[1].querySelector('.tab-en').textContent = lang === 'zh' ? 'Reference' : '對照表';
-  tabBtns[2].querySelector('.tab-zh').textContent = lang === 'zh' ? '鍵盤' : 'Keyboard';
-  tabBtns[2].querySelector('.tab-en').textContent = lang === 'zh' ? 'Keyboard' : '鍵盤';
-
-  /* table */
-  document.getElementById('table-title').textContent    = t.tableTitle;
-  document.getElementById('table-subtitle').textContent = t.tableSub;
-  document.getElementById('label-initials').textContent = t.labelInitials + ' 聲母';
-  document.getElementById('label-medials').textContent  = t.labelMedials + ' 介母';
-  document.getElementById('label-finals').textContent   = t.labelFinals  + ' 韻母';
-  document.getElementById('label-tones').textContent    = t.labelTones   + ' 聲調';
-
-  /* keyboard */
-  document.getElementById('kb-title').textContent    = t.kbTitle;
-  document.getElementById('kb-subtitle').textContent = t.kbSub;
-  document.getElementById('legend-zh').textContent   = t.legendZh;
-  document.getElementById('legend-qwerty').textContent = t.legendQwerty;
-  document.getElementById('legend-tone').textContent = t.legendTone;
-
-  /* word explorer */
-  document.getElementById('next-label').textContent   = t.nextLabel;
-  document.getElementById('word-hint-label').textContent = t.wordHint;
-
-  /* lang toggle active state */
   const enSpan = document.getElementById('toggle-en');
   const zhSpan = document.getElementById('toggle-zh');
   if (lang === 'en') { enSpan.classList.add('active'); zhSpan.classList.remove('active'); }
@@ -418,10 +638,9 @@ document.getElementById('lang-toggle').addEventListener('click', e => {
   updateLanguage();
 });
 
-updateLanguage();
-
 /* ══════════════════════════════════════════════
-   9. WIRE UP "LEARN" BUTTON FROM INDEX
-      (index.html → btn-learn → learn.html)
+   8. INIT
 ══════════════════════════════════════════════ */
-// (navigation is handled by index.html's main.js — nothing extra needed here)
+renderDrillSymbol();
+initWordSession();
+updateLanguage();

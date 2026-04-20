@@ -172,11 +172,6 @@ function startTyping() {
   clearTimeout(typeTimeout);
   step = 0;
   isTypingDone = false;
-  const cursor = document.getElementById('cursor');
-  if (cursor) {
-    cursor.style.animation = 'none';
-    cursor.style.opacity = '1';
-  }
   typeTitle();
 }
 
@@ -191,10 +186,6 @@ function typeTitle() {
     typeTimeout = setTimeout(typeTitle, isLast ? 500 : 100 + Math.random() * 100);
   } else {
     isTypingDone = true;
-    const cursor = document.getElementById('cursor');
-    if (cursor && animationsEnabled) {
-      cursor.style.animation = 'blink 0.9s step-end infinite';
-    }
   }
 }
 setTimeout(startTyping, 500);
@@ -230,20 +221,6 @@ function applySettings() {
 
   animationsEnabled = anims;
   toggleAnimations.checked = anims;
-  
-  const cursor = document.getElementById('cursor');
-  if (cursor) {
-    if (!anims) {
-      cursor.style.animation = 'none';
-      cursor.style.opacity = '1';
-    } else if (isTypingDone) {
-      // Only force blink on load if typing has somehow already finished
-      cursor.style.animation = 'blink 0.9s step-end infinite';
-    } else {
-      // Keep it solid while typing
-      cursor.style.animation = 'none';
-    }
-  }
 
   timerPills.forEach(p => {
     p.classList.toggle('active', p.dataset.seconds === duration);
@@ -263,17 +240,10 @@ toggleAnimations.addEventListener('change', () => {
   animationsEnabled = toggleAnimations.checked;
   sessionStorage.setItem('animations', animationsEnabled);
   
-  const cursor = document.getElementById('cursor');
   if (!animationsEnabled) {
     document.querySelectorAll('.float-phrase').forEach(el => el.remove());
     activeYPositions.length = 0;
     savedPhrases = [];
-    if (cursor) { cursor.style.animation = 'none'; cursor.style.opacity = '1'; }
-  } else {
-    // If user toggles it back on, only blink if typing is done
-    if (cursor && isTypingDone) { 
-      cursor.style.animation = 'blink 0.9s step-end infinite'; 
-    }
   }
 });
 

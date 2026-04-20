@@ -35,37 +35,41 @@ body {
 #topnav {
   position: absolute;
   top: 2rem;
-  left: 4.5rem;
+  left: 2.5rem;
   display: flex;
   align-items: center;
-  gap: 0.5rem;
+  gap: 0.75rem;
   z-index: 10;
 }
 
 #topnav.topnav-scaled {
-  scale: 2; /*1.5*/
+  /* removed scale:2 — replaced with real sizing below */
 }
+
 #logo-mark {
-  width: 34px;
-  height: 34px;
-  border: 2px solid #c0392b;
+  width: 52px;
+  height: 52px;
+  border: 2.5px solid #c0392b;
   border-radius: 50%;
   display: flex;
   align-items: center;
   justify-content: center;
-  font-size: 13px;
+  font-size: 18px;
   color: #c0392b;
-  font-weight: 500;
+  font-weight: 600;
   letter-spacing: -1px;
   text-decoration: none;
 }
 
 #lang-toggle {
-  color: #c0392b;  /* add this if missing */
+  color: #c0392b;
   cursor: pointer;
   display: flex;
   align-items: center;
   user-select: none;
+  font-size: 18px;
+  font-weight: 500;
+  letter-spacing: 0.04em;
 }
 
 #lang-toggle span:not(.divider) {
@@ -94,7 +98,7 @@ body {
 ───────────────────────────────────────────── */
 #btn-settings {
   position: fixed;
-  top: 1.5rem;
+  top: 1.8rem;
   right: 2.5rem;
   background: transparent;
   border: none;
@@ -105,12 +109,11 @@ body {
   align-items: center;
   justify-content: center;
   transition: transform 0.2s ease;
-  scale: 1.5;
 }
 
 #btn-settings svg {
-  width: 26px;
-  height: 26px;
+  width: 36px;
+  height: 36px;
   pointer-events: none;
   transition: transform 0.2s ease;
 }
@@ -120,7 +123,7 @@ body {
 }
 
 #btn-settings:hover svg {
-  transform: /*scale(1.35)*/ rotate(90deg);
+  transform: rotate(90deg);
 }
 
 /* ─────────────────────────────────────────────
@@ -208,13 +211,14 @@ body {
   display: flex;
   flex-direction: column;
   align-items: center;
-  gap: 0.6rem; 
+  gap: 0.6rem;
   z-index: 5;
-  scale: 1.4; /* Split the difference between 1.2 and 1.65 */
+  padding: 0 2rem;
+  max-width: 100%;
 }
 
 #title-line {
-  font-size: clamp(4.5rem, 8vw, 12.5rem); 
+  font-size: clamp(5rem, 12vw, 14rem);
   font-weight: 700;
   color: #c0392b;
   letter-spacing: -0.01em;
@@ -226,12 +230,12 @@ body {
 
 #cursor {
   display: inline-block;
-  width: 2.5px;
+  width: 3px;
   height: 0.95em;
   background: #c0392b;
-  margin-left: 4px;
+  margin-left: 6px;
   vertical-align: middle;
-  /* Removed the animation line from here */
+  animation: blink 0.9s step-end infinite;
 }
 
 @keyframes blink {
@@ -240,8 +244,7 @@ body {
 }
 
 #subtitle {
-  /* Increased slightly for better legibility */
-  font-size: clamp(0.75rem, 1.4vw, 1.2rem);
+  font-size: clamp(0.85rem, 1.6vw, 1.3rem);
   color: #888;
   letter-spacing: 0.12em;
   text-transform: uppercase;
@@ -261,8 +264,8 @@ body {
 }
 
 .btn-half {
-  padding: 0.75rem 2.8rem;
-  font-size: clamp(0.85rem, 1.5vw, 1rem);
+  padding: 0.9rem 3.5rem;
+  font-size: clamp(0.95rem, 1.6vw, 1.15rem);
   font-weight: 600;
   color: white;
   background: transparent;
@@ -355,6 +358,21 @@ body.dark #center {
 }
 body.dark #lang-toggle span.active {
   color: #e05a4a;
+}
+body::after {
+  content: '';
+  position: fixed;
+  top: 5.5rem;
+  left: 0;
+  right: 0;
+  height: 1px;
+  background: rgba(192, 57, 43, 0.15);
+  z-index: 5;
+  pointer-events: none;
+}
+
+body.dark::after {
+  background: rgba(255, 255, 255, 0.08);
 }
 /* ─────────────────────────────────────────────
    11. SETTINGS EXTRAS

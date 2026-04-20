@@ -33,32 +33,36 @@ body {
    3. TOP NAV (logo + language toggle, top left)
 ───────────────────────────────────────────── */
 #topnav {
-  position: absolute;
-  top: 2rem;
-  left: 2.5rem;
+  position: fixed;
+  top: 0;
+  left: 0;
+  right: 0;
+  height: 5.5rem;
   display: flex;
   align-items: center;
-  gap: 0.75rem;
+  padding: 0 2.5rem;
+  gap: 1rem;
   z-index: 10;
 }
 
 #topnav.topnav-scaled {
-  /* removed scale:2 — replaced with real sizing below */
+  /* sizing handled directly below */
 }
 
 #logo-mark {
-  width: 52px;
-  height: 52px;
-  border: 2.5px solid #c0392b;
+  width: 62px;
+  height: 62px;
+  border: 3px solid #c0392b;
   border-radius: 50%;
   display: flex;
   align-items: center;
   justify-content: center;
-  font-size: 18px;
+  font-size: 22px;
   color: #c0392b;
   font-weight: 600;
   letter-spacing: -1px;
   text-decoration: none;
+  flex-shrink: 0;
 }
 
 #lang-toggle {
@@ -67,7 +71,7 @@ body {
   display: flex;
   align-items: center;
   user-select: none;
-  font-size: 18px;
+  font-size: 22px;
   font-weight: 500;
   letter-spacing: 0.04em;
 }
@@ -98,13 +102,14 @@ body {
 ───────────────────────────────────────────── */
 #btn-settings {
   position: fixed;
-  top: 1.8rem;
+  top: 0;
   right: 2.5rem;
+  height: 5.5rem;
   background: transparent;
   border: none;
   cursor: pointer;
   z-index: 999;
-  padding: 0.4rem;
+  padding: 0;
   display: flex;
   align-items: center;
   justify-content: center;
@@ -131,7 +136,7 @@ body {
 ───────────────────────────────────────────── */
 #settings-menu {
   position: fixed;
-  top: 4.5rem;
+  top: 5.75rem;
   right: 2.5rem;
   background: white;
   border: 3.5px solid #c0392b;
@@ -359,21 +364,6 @@ body.dark #center {
 body.dark #lang-toggle span.active {
   color: #e05a4a;
 }
-body::after {
-  content: '';
-  position: fixed;
-  top: 5.5rem;
-  left: 0;
-  right: 0;
-  height: 1px;
-  background: rgba(192, 57, 43, 0.15);
-  z-index: 5;
-  pointer-events: none;
-}
-
-body.dark::after {
-  background: rgba(255, 255, 255, 0.08);
-}
 /* ─────────────────────────────────────────────
    11. SETTINGS EXTRAS
 ───────────────────────────────────────────── */
@@ -418,4 +408,21 @@ body.dark .timer-pill {
 body.dark .timer-pill.active {
   border-color: #e05a4a;
   color: #e05a4a;
+}
+/* ─────────────────────────────────────────────
+   12. TOP DIVIDER LINE (index.html only)
+───────────────────────────────────────────── */
+#top-divider {
+  position: fixed;
+  top: 5.5rem;
+  left: 0;
+  right: 0;
+  height: 1px;
+  background: rgba(192, 57, 43, 0.15);
+  z-index: 5;
+  pointer-events: none;
+}
+
+body.dark #top-divider {
+  background: rgba(255, 255, 255, 0.08);
 }

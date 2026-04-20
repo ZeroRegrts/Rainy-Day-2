@@ -89,6 +89,21 @@ body {
   opacity: 0.65;
   transform: translateY(-2px);
 }
+body::after {
+  content: '';
+  position: fixed;
+  top: 5.5rem;
+  left: 0;
+  right: 0;
+  height: 3px;
+  background: rgba(192, 57, 43, 0.15);
+  z-index: 5;
+  pointer-events: none;
+}
+
+body.dark::after {
+  background: rgba(255, 255, 255, 0.08);
+}
 /* ─────────────────────────────────────────────
    4. SETTINGS BUTTON (gear icon, top right)
 ───────────────────────────────────────────── */
@@ -254,10 +269,18 @@ body {
 #action-btn {
   display: flex;
   border: 2px solid white;
-  border-radius: 60px;
-  overflow: hidden;
+  
+  /* Modern rounded rectangle look */
+  border-radius: 12px; 
+  
+  /* Crucial: Keeps the hover backgrounds clipped to the rectangle */
+  overflow: hidden; 
+  
   background: #c0392b;
   margin-top: 1.2rem;
+  
+  /* Ensures the divider and buttons have a consistent height */
+  align-items: stretch; 
 }
 
 .btn-half {
@@ -271,6 +294,9 @@ body {
   letter-spacing: 0.13em;
   text-transform: uppercase;
   transition: background 0.18s;
+  
+  /* Ensures button fills the vertical space of the rectangle */
+  flex: 1; 
 }
 
 .btn-half:hover  { background: rgba(255, 255, 255, 0.15); }
@@ -278,8 +304,11 @@ body {
 
 .btn-divider {
   width: 2px;
-  background: rgba(255, 255, 255, 0.6);
+  /* Reduced opacity slightly to look cleaner against the rectangle */
+  background: rgba(255, 255, 255, 0.4); 
   flex-shrink: 0;
+  /* Ensures it stretches top-to-bottom */
+  align-self: stretch; 
 }
 
 /* ─────────────────────────────────────────────

@@ -242,13 +242,20 @@ function showSectionList() {
 let pendingSection = null;
 let chosenLength = 20;
 
+function getLang() {
+  const l = sessionStorage.getItem('lang');
+  if (!l || l === 'zh') { sessionStorage.setItem('lang', 'zh-TW'); return 'zh-TW'; }
+  return l;
+}
+function isPinyin() { return getLang() === 'zh-CN'; }
+
 function showSessionSetup(sectionKey) {
   pendingSection = sectionKey;
   document.getElementById('section-list').style.display = 'none';
   document.getElementById('session-setup').classList.remove('hidden');
 
-  const lang = sessionStorage.getItem('lang') || 'zh';
-  const t = TRANSLATIONS[lang];
+  const lang = getLang();
+  const t = TRANSLATIONS[lang] || TRANSLATIONS['zh-TW'];
   document.getElementById('setup-section-name').textContent = t[sectionKey + 'Name'] || sectionKey;
   document.getElementById('setup-desc').textContent = t[sectionKey + 'Desc'] || '';
 
@@ -310,8 +317,8 @@ function startDrill(sectionKey, infinite) {
 
   document.getElementById('drill-score-screen').classList.add('hint-hidden');
 
-  const lang = sessionStorage.getItem('lang') || 'zh';
-  const t = TRANSLATIONS[lang];
+  const lang = getLang();
+  const t = TRANSLATIONS[lang] || TRANSLATIONS['zh-TW'];
   document.getElementById('drill-section-title').textContent = t[sectionKey+'Name'] || sectionKey;
   document.getElementById('drill-streak').textContent = '0';
   document.getElementById('drill-accuracy').textContent = '—';
@@ -1014,7 +1021,7 @@ const TRANSLATIONS = {
     scoreTitle:'Session Complete',
     tryAgain:'Try Again', nextLevel:'Next Level',
   },
-  zh: {
+  'zh-TW': {
     drillTab:'符號練習', wordsTab:'單字練習',
     /* section list */
     initialsName:'聲母', initialsZh:'Initials', initialsDesc:'聲母是音節最開頭的子音',
@@ -1045,9 +1052,33 @@ const TRANSLATIONS = {
   },
 };
 
+TRANSLATIONS['zh-CN'] = {
+  ...TRANSLATIONS['zh-TW'],
+  drillTab:'符号练习', wordsTab:'单字练习',
+  initialsName:'声母', initialsDesc:'声母是音节最开头的子音',
+  medialsName:'介母', medialsDesc:'介母是桥接母音 ㄧ ㄨ ㄩ',
+  finalsName:'韵母', finalsDesc:'韵母是音节结尾的母音',
+  tonesName:'声调', tonesDesc:'声调符号 — 空白键为一声',
+  combosName:'组合练习', combosDesc:'多键音节：声母 + 介母 + 韵母 + 声调',
+  masteryLabel:'熟练度', legendUnseen:'未见', legendLearning:'学习中',
+  legendFamiliar:'熟悉', legendMastered:'已掌握',
+  setupLengthLabel:'选择练习题数',
+  setupStart:'开始', setupCancel:'取消',
+  back:'← 返回', streak:'连续答对', accuracy:'准确率', progress:'进度',
+  showKeyBtn:'显示按键', kbMapBtn:'键盘图',
+  drillInstruction:'按下对应的 QWERTY 键',
+  drillScoreTitle:'练习完成',
+  drillRetry:'再试一次', drillInfinite:'无限模式', drillBack:'返回',
+  zhuyinBtn:'注音', keySeqBtn:'按键序列', meaningBtn:'翻译', wordKbBtn:'键盘图',
+  wordPlaceholder:'输入这个词...',
+  wordHint:'请开启注音输入法',
+  scoreTitle:'练习完成',
+  tryAgain:'再试一次', nextLevel:'下一级',
+};
+
 function updateLanguage() {
-  const lang = sessionStorage.getItem('lang') || 'zh';
-  const t = TRANSLATIONS[lang];
+  const lang = getLang();
+  const t = TRANSLATIONS[lang] || TRANSLATIONS['zh-TW'];
 
   /* tabs */
   document.querySelector('[data-tab="drill"] .tab-zh').textContent = t.drillTab;
@@ -1100,10 +1131,9 @@ function updateLanguage() {
   document.getElementById('btn-next-level').textContent = t.nextLevel;
 
   /* lang toggle */
-  const enSpan=document.getElementById('toggle-en');
-  const zhSpan=document.getElementById('toggle-zh');
-  if (lang==='en'){enSpan.classList.add('active');zhSpan.classList.remove('active');}
-  else{zhSpan.classList.add('active');enSpan.classList.remove('active');}
+  document.getElementById('toggle-en').classList.toggle('active', lang === 'en');
+  document.getElementById('toggle-jian').classList.toggle('active', lang === 'zh-CN');
+  document.getElementById('toggle-fan').classList.toggle('active', lang === 'zh-TW');
 
   /* re-render setup if visible */
   if (pendingSection && !document.getElementById('session-setup').classList.contains('hidden')) {
@@ -1116,8 +1146,9 @@ document.getElementById('lang-toggle').addEventListener('click', e => {
   if (e.target.classList.contains('divider')) return;
   let newLang;
   if (e.target.id==='toggle-en') newLang='en';
-  else if (e.target.id==='toggle-zh') newLang='zh';
-  else newLang=(sessionStorage.getItem('lang')||'zh')==='zh'?'en':'zh';
+  else if (e.target.id==='toggle-jian') newLang='zh-CN';
+  else if (e.target.id==='toggle-fan') newLang='zh-TW';
+  else { const cur=getLang(); newLang=cur==='en'?'zh-TW':cur==='zh-TW'?'zh-CN':'en'; }
   sessionStorage.setItem('lang',newLang);
   updateLanguage();
 });

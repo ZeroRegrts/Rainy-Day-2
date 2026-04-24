@@ -701,17 +701,29 @@ const writeTranslations = {
     wpm: "WPM", accuracy: "Accuracy", resultTitle: "Result",
     chars: "Characters", again: "Restart", stats: "Stats", home: "Home"
   },
-  zh: {
+  'zh-TW': {
     speedtest: "速度測試", practice: "練習模式", strict: "嚴格模式",
     showInput: "⌨ 顯示輸入框", abort: "中斷", time: "時間",
     wpm: "WPM", accuracy: "準確率", resultTitle: "結果",
     chars: "字數", again: "再來一次", stats: "統計", home: "回首頁"
+  },
+  'zh-CN': {
+    speedtest: "速度测试", practice: "练习模式", strict: "严格模式",
+    showInput: "⌨ 显示输入框", abort: "中断", time: "时间",
+    wpm: "WPM", accuracy: "准确率", resultTitle: "结果",
+    chars: "字数", again: "再来一次", stats: "统计", home: "回首页"
   }
 };
 
+function getLang() {
+  const l = sessionStorage.getItem('lang');
+  if (!l || l === 'zh') { sessionStorage.setItem('lang', 'zh-TW'); return 'zh-TW'; }
+  return l;
+}
+
 function updateWriteLanguage() {
-  const lang = sessionStorage.getItem('lang') || 'zh';
-  const t = writeTranslations[lang];
+  const lang = getLang();
+  const t = writeTranslations[lang] || writeTranslations['zh-TW'];
 
   // Mode Buttons
   document.getElementById('btn-speedtest').textContent = t.speedtest;
@@ -738,15 +750,9 @@ function updateWriteLanguage() {
   document.getElementById('btn-stats').textContent = t.stats;
   document.getElementById('btn-home').textContent = t.home;
 
-  const enSpan = document.getElementById('toggle-en');
-  const zhSpan = document.getElementById('toggle-zh');
-  if (lang === 'en') {
-    enSpan.classList.add('active');
-    zhSpan.classList.remove('active');
-  } else {
-    zhSpan.classList.add('active');
-    enSpan.classList.remove('active');
-  }
+  document.getElementById('toggle-en').classList.toggle('active', lang === 'en');
+  document.getElementById('toggle-jian').classList.toggle('active', lang === 'zh-CN');
+  document.getElementById('toggle-fan').classList.toggle('active', lang === 'zh-TW');
 }
 
 document.getElementById('lang-toggle').addEventListener('click', (e) => {
@@ -755,10 +761,11 @@ document.getElementById('lang-toggle').addEventListener('click', (e) => {
   let newLang;
   if (clicked.id === 'toggle-en') {
     newLang = 'en';
-  } else if (clicked.id === 'toggle-zh') {
-    newLang = 'zh';
+  } else if (clicked.id === 'toggle-jian') { newLang = 'zh-CN';
+  } else if (clicked.id === 'toggle-fan') {
+    newLang = 'zh-TW';
   } else {
-    newLang = (sessionStorage.getItem('lang') || 'zh') === 'zh' ? 'en' : 'zh';
+    { const cur = getLang(); newLang = cur === 'en' ? 'zh-TW' : cur === 'zh-TW' ? 'zh-CN' : 'en'; }
   }
   sessionStorage.setItem('lang', newLang);
   updateWriteLanguage();

@@ -57,7 +57,7 @@ body {
   display: flex;
   align-items: center;
   justify-content: center;
-  font-size: 22px;
+  font-size: 20px;
   color: #c0392b;
   font-weight: 600;
   letter-spacing: -1px;
@@ -71,15 +71,17 @@ body {
   display: flex;
   align-items: center;
   user-select: none;
-  font-size: 22px;
+  font-size: 20px;
   font-weight: 500;
   letter-spacing: 0.04em;
+  gap: 0.1rem;
 }
 
 #lang-toggle span:not(.divider) {
   opacity: 0.3;
   transition: opacity 0.2s ease, transform 0.2s ease;
   display: inline-block;
+  padding: 0 0.1rem;
 }
 
 #lang-toggle span.active {
@@ -88,9 +90,9 @@ body {
 }
 
 #lang-toggle .divider {
-  margin: 0 6px;
   opacity: 0.2;
   cursor: default;
+  padding: 0 0.2rem;
 }
 
 #lang-toggle span:not(.active):not(.divider):hover {

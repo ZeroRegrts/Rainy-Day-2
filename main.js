@@ -160,7 +160,8 @@ document.addEventListener('visibilitychange', () => {
 
 // 4a. Title — bilingual typing animation
 const titleSteps = {
-  zh: ['ㄩ', 'ㄩˇ', 'ㄩˇ ㄊ', 'ㄩˇ ㄊㄧ', 'ㄩˇ ㄊㄧㄢ', '雨天'],
+  'zh-TW': ['ㄩ', 'ㄩˇ', 'ㄩˇ ㄊ', 'ㄩˇ ㄊㄧ', 'ㄩˇ ㄊㄧㄢ', '雨天'],
+  'zh-CN': ['y', 'yǔ', 'yǔ t', 'yǔ ti', 'yǔ tiā', 'yǔ tiān', '雨天'],
   en: ['R', 'Ra', 'Rai', 'Rain', 'Rainy', 'Rainy ', 'Rainy D', 'Rainy Da', 'Rainy Day']
 };
 const titleEl = document.getElementById('title-text');
@@ -176,8 +177,8 @@ function startTyping() {
 }
 
 function typeTitle() {
-  const lang = sessionStorage.getItem('lang') || 'zh';
-  const steps = titleSteps[lang];
+  const lang = getLang();
+  const steps = titleSteps[lang] || titleSteps['zh-TW'];
   
   if (step < steps.length) {
     titleEl.textContent = steps[step];
@@ -239,7 +240,6 @@ document.addEventListener('click', (e) => {
 toggleAnimations.addEventListener('change', () => {
   animationsEnabled = toggleAnimations.checked;
   sessionStorage.setItem('animations', animationsEnabled);
-  
   if (!animationsEnabled) {
     document.querySelectorAll('.float-phrase').forEach(el => el.remove());
     activeYPositions.length = 0;
@@ -275,14 +275,27 @@ document.getElementById('btn-learn').addEventListener('click', () => {
    7. LANGUAGE TOGGLE
 ───────────────────────────────────────────── */
 const langToggle = document.getElementById('lang-toggle');
+
+function getLang() {
+  const l = sessionStorage.getItem('lang');
+  // Migrate old 'zh' value to 'zh-TW'
+  if (!l || l === 'zh') {
+    sessionStorage.setItem('lang', 'zh-TW');
+    return 'zh-TW';
+  }
+  return l;
+}
+function isPinyin() { return getLang() === 'zh-CN'; }
+
 const homeTranslations = {
-  en: { learn: "Learn", write: "Type", animations: "Animations", dark: "Dark Mode" },
-  zh: { learn: "學習", write: "打字", animations: "動畫", dark: "深色模式" }
+  en:      { learn: 'Learn',  write: 'Type',  animations: 'Animations', dark: 'Dark Mode' },
+  'zh-TW': { learn: '學習',  write: '打字',  animations: '動畫',       dark: '深色模式'  },
+  'zh-CN': { learn: '学习',  write: '打字',  animations: '动画',       dark: '深色模式'  },
 };
 
 function updateHomeLanguage() {
-  const lang = sessionStorage.getItem('lang') || 'zh';
-  const t = homeTranslations[lang];
+  const lang = getLang();
+  const t = homeTranslations[lang] || homeTranslations['zh-TW'];
 
   document.getElementById('btn-learn').textContent = t.learn;
   document.getElementById('btn-write').textContent = t.write;
@@ -293,24 +306,17 @@ function updateHomeLanguage() {
     settingsSpans[1].textContent = t.dark;
   }
 
-  const enSpan = document.getElementById('toggle-en');
-  const zhSpan = document.getElementById('toggle-zh');
-  if (lang === 'en') {
-    enSpan.classList.add('active');
-    zhSpan.classList.remove('active');
-  } else {
-    zhSpan.classList.add('active');
-    enSpan.classList.remove('active');
-  }
+  document.getElementById('toggle-en').classList.toggle('active', lang === 'en');
+  document.getElementById('toggle-jian').classList.toggle('active', lang === 'zh-CN');
+  document.getElementById('toggle-fan').classList.toggle('active', lang === 'zh-TW');
 
-  // Shift the title up ONLY for English
   const titleLine = document.getElementById('title-line');
   if (titleLine) {
     titleLine.style.transform = (lang === 'en') ? 'translateY(-3rem)' : 'none';
   }
 
-  // If they toggle language after it finished typing, re-type it in the new language!
-  const finalWord = titleSteps[lang][titleSteps[lang].length - 1];
+  const steps = titleSteps[lang] || titleSteps['zh-TW'];
+  const finalWord = steps[steps.length - 1];
   if (isTypingDone && titleEl.textContent !== finalWord) {
     startTyping();
   }
@@ -318,12 +324,15 @@ function updateHomeLanguage() {
 
 langToggle.addEventListener('click', (e) => {
   if (e.target.classList.contains('divider')) return;
-  const clicked = e.target;
+  const id = e.target.id;
   let newLang;
-  if (clicked.id === 'toggle-en') newLang = 'en';
-  else if (clicked.id === 'toggle-zh') newLang = 'zh';
-  else newLang = (sessionStorage.getItem('lang') || 'zh') === 'zh' ? 'en' : 'zh';
-  
+  if (id === 'toggle-en')        newLang = 'en';
+  else if (id === 'toggle-jian') newLang = 'zh-CN';
+  else if (id === 'toggle-fan')  newLang = 'zh-TW';
+  else {
+    const cur = getLang();
+    newLang = cur === 'en' ? 'zh-TW' : cur === 'zh-TW' ? 'zh-CN' : 'en';
+  }
   sessionStorage.setItem('lang', newLang);
   updateHomeLanguage();
 });

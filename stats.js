@@ -189,16 +189,27 @@ const statsTranslations = {
     accuracy: "Accuracy", chars: "Characters", graph: "WPM over time",
     again: "Try Again", home: "Home"
   },
-  zh: {
+  'zh-TW': {
     title: "統計", wpm: "WPM", burst: "最高瞬間速度",
     accuracy: "準確率", chars: "字數", graph: "WPM 趨勢圖",
     again: "再試一次", home: "回首頁"
+  },
+  'zh-CN': {
+    title: "统计", wpm: "WPM", burst: "最高瞬时速度",
+    accuracy: "准确率", chars: "字数", graph: "WPM 趋势图",
+    again: "再试一次", home: "回首页"
   }
 };
 
+function getLang() {
+  const l = sessionStorage.getItem('lang');
+  if (!l || l === 'zh') { sessionStorage.setItem('lang', 'zh-TW'); return 'zh-TW'; }
+  return l;
+}
+
 function updateStatsLanguage() {
-  const lang = sessionStorage.getItem('lang') || 'zh';
-  const t = statsTranslations[lang];
+  const lang = getLang();
+  const t = statsTranslations[lang] || statsTranslations['zh-TW'];
 
   document.getElementById('stats-title').textContent = t.title;
   document.getElementById('graph-label').textContent = t.graph;
@@ -212,15 +223,9 @@ function updateStatsLanguage() {
   labels[3].textContent = t.chars;
 
   // UPDATED: Update active state on toggle spans
-  const enSpan = document.getElementById('toggle-en');
-  const zhSpan = document.getElementById('toggle-zh');
-  if (lang === 'en') {
-    enSpan.classList.add('active');
-    zhSpan.classList.remove('active');
-  } else {
-    zhSpan.classList.add('active');
-    enSpan.classList.remove('active');
-  }
+  document.getElementById('toggle-en').classList.toggle('active', lang === 'en');
+  document.getElementById('toggle-jian').classList.toggle('active', lang === 'zh-CN');
+  document.getElementById('toggle-fan').classList.toggle('active', lang === 'zh-TW');
 }
 
 // UPDATED: Improved click listener to match main.js
@@ -230,10 +235,11 @@ document.getElementById('lang-toggle').addEventListener('click', (e) => {
   let newLang;
   if (clicked.id === 'toggle-en') {
     newLang = 'en';
-  } else if (clicked.id === 'toggle-zh') {
-    newLang = 'zh';
+  } else if (clicked.id === 'toggle-jian') { newLang = 'zh-CN';
+  } else if (clicked.id === 'toggle-fan') {
+    newLang = 'zh-TW';
   } else {
-    newLang = (sessionStorage.getItem('lang') || 'zh') === 'zh' ? 'en' : 'zh';
+    { const cur = getLang(); newLang = cur === 'en' ? 'zh-TW' : cur === 'zh-TW' ? 'zh-CN' : 'en'; }
   }
   sessionStorage.setItem('lang', newLang);
   updateStatsLanguage();
